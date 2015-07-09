@@ -5,30 +5,29 @@
 		public string name;
 		public bool isActive;
 	}
-	public class ObjectInfo
+	public abstract class InteractObject
 	{
 		public string name;
-		public bool isActive;		
-		public class Interaction
-		{
-			public string name;
-			public bool isActive;
-			public float timeConsumption;
-			public Condition[] activeConditions;
-			public Condition[] results;
-			
-			public void checkActive()
-			{
-				
-			}
-		}
-		public Interaction[] interactions;
+		public bool isActive;
 		public Condition[] activeConditions;
-		
 		public void checkActive()
 		{
 			
 		}
+	}
+	public class Interaction : InteractObject
+	{
+		public float timeConsumption;
+		public Condition[] results;
+		public void execute()
+		{
+			
+		}
+	}
+	public class ObjectInfo
+	{
+
+		public Interaction[] interactions;
 		public void showActiveInteractions()
 		{
 			

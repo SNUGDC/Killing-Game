@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
 using LitJson;
 
-public class TestClass
+public class TClass
+{
+	public int b = 7;
+}
+
+public class TestClass : TClass
 {
 	public int a = 3;
 	
