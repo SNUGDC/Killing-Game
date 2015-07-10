@@ -23,7 +23,18 @@ namespace KillingGame.CrimeScene
 			public string label;
 			public void execute()
 			{
-				
+				switch(function)
+				{
+					case Functions.enable:
+						target.GetComponent<CrimeObject>().enableSelectable(label);
+					break;
+					case Functions.disable:
+						target.GetComponent<CrimeObject>().disableSelectable(label);
+					break;
+					case Functions.erase:
+						target.GetComponent<CrimeObject>().eraseSelectable(label);					
+					break;
+				}
 			}
 		}
 		
@@ -46,19 +57,14 @@ namespace KillingGame.CrimeScene
 			public void execute()
 			{
 				target.GetComponent<SpriteRenderer>().sprite = newSprite;
+				target.GetComponent<CrimeObject>().baseSprite = newSprite;
 			}
-		}
-		
-		[System.Serializable]
-		public struct ShowMessage
-		{
-			public string texts;
 		}
 		
 		public Result[] results;
 		public Obtain[] obtains;
 		public ChangeSprite[] spriteChanges;
-		public ShowMessage[] showMessages;
+		public string[] showMessages;
 		
 		public void execute()
 		{
@@ -79,9 +85,9 @@ namespace KillingGame.CrimeScene
 			{
 				changesprite.execute();
 			}
-			foreach (ShowMessage showMessage in showMessages)
+			if (showMessages != null)
 			{
-				
+				CrimeManager.Instance.showMessage(showMessages);
 			}
 		}
 	}	
