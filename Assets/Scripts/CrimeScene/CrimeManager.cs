@@ -10,6 +10,7 @@ namespace KillingGame.CrimeScene
 		public float maxTime;
 		float currentTime;
 		public GameObject needle;
+		public int dangerCount;
 		
 		void Awake()
 		{
@@ -36,9 +37,15 @@ namespace KillingGame.CrimeScene
 				Application.LoadLevel("GameOver");
 			showTime();
 		}
+		
 		void showTime()
 		{
 			needle.transform.eulerAngles = new Vector3(0,0,-360 * currentTime/maxTime);
+		}
+		
+		void ExitCrimeScene()
+		{
+			GameManager.ChapterClear(dangerCount);
 		}
 	}	
 }
