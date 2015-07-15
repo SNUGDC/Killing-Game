@@ -44,7 +44,7 @@ namespace KillingGame.CrimeScene
 		{
 			if (label == "Object")
 			{
-				Destroy(this.gameObject);
+				Destroy(gameObject);
 				return;
 			}
 			Destroy(selectables[label]);
