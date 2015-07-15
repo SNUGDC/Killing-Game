@@ -29,6 +29,10 @@ namespace KillingGame.CrimeScene
 			messageHolder.SetActive(true);
 			messageHolder.GetComponent<MessageShow>().getMessages(texts);
 		}
+		public void ShowMessage(string[] texts)
+		{
+			
+		}
 		
 		public void spendTime(float timeSpent)
 		{
@@ -36,6 +40,11 @@ namespace KillingGame.CrimeScene
 			if (currentTime > maxTime)
 				Application.LoadLevel("GameOver");
 			showTime();
+		}
+		
+		public void SpendTime(float timeSpent)
+		{
+			
 		}
 		
 		void showTime()

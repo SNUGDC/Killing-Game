@@ -3,7 +3,15 @@ using System.Collections.Generic;
 
 namespace KillingGame.CrimeScene
 {
-	public class CrimeObject : MonoBehaviour 
+	public enum EnableOption
+	{
+		enable, disable, erase
+	}
+	public interface IEnable
+	{
+		void SetEnable(EnableOption option);
+	}
+	public class CrimeObject : MonoBehaviour, IEnable 
 	{
 		public bool isActive;
 		public Sprite baseSprite;
@@ -11,6 +19,22 @@ namespace KillingGame.CrimeScene
 		Dictionary<string, Selectable> selectables;
 
 		GameObject[] selectButtons;
+		
+		public void SetEnable(EnableOption option)
+		{
+			switch (option)
+			{
+				case EnableOption.enable:
+					isActive = true;
+					break;
+				case EnableOption.disable:
+					isActive = false;
+					break;
+				case EnableOption.erase:
+					Destroy(gameObject);
+					break;
+			}
+		}
 		
 		void Start()
 		{
