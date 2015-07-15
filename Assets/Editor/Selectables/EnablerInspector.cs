@@ -35,4 +35,14 @@ public class EnablerInspector : Editor
          SceneView.onSceneGUIDelegate -= OnScene;
          SceneView.onSceneGUIDelegate += OnScene;
      }
+	 public void OnSceneGUI()
+	 {
+		if (enabler != null && enabler.target != null)
+		{
+			Handles.color = Color.red;
+			Handles.DrawLine(enabler.transform.position, enabler.target.transform.position);
+			Handles.Label(0.5f*enabler.transform.position + 0.5f*enabler.target.transform.position, enabler.option.ToString() + " " + enabler.target.name);
+		}
+		HandleUtility.Repaint();
+	 }
 }
