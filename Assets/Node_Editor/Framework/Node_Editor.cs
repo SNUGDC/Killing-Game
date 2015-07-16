@@ -333,11 +333,8 @@ public class Node_Editor : EditorWindow
 				}
 				else if (e.button == 1) 
 				{ // Right click -> Editor Context Click
-					GenericMenu menu = new GenericMenu ();
-					
-					menu.AddItem(new GUIContent("Add Input Node"), false, ContextCallback, "inputNode");
-					menu.AddItem(new GUIContent("Add Display Node"), false, ContextCallback, "displayNode");
-					menu.AddItem(new GUIContent("Add Calculation Node"), false, ContextCallback, "calcNode");
+					GenericMenu menu = new GenericMenu ();					
+					menu.AddItem(new GUIContent("Add Object Node"), false, ContextCallback, "objectNode");
 					menu.AddSeparator("");
 					
 					menu.ShowAsContext ();
@@ -409,19 +406,11 @@ public class Node_Editor : EditorWindow
 	public void ContextCallback (object obj)
 	{
 		switch (obj.ToString ()) 
-		{
-		case "calcNode":
-			CalcNode calcNode = CalcNode.Create (new Rect (mousePos.x, mousePos.y, 200, 100));
+		{		
+		case "objectNode":
+			ObjectNode objectNode = ObjectNode.Create (new Rect (mousePos.x, mousePos.y, 200, 100));
 			break;
-			
-		case "inputNode":
-			InputNode inputNode = InputNode.Create (new Rect (mousePos.x, mousePos.y, 100, 50));
-			break;
-			
-		case "displayNode":
-			DisplayNode displayNode = DisplayNode.Create (new Rect (mousePos.x, mousePos.y, 100, 50));
-			break;
-			
+	
 		case "deleteNode":
 			Node node = NodeAtPosition (mousePos);
 			if (node != null) 
