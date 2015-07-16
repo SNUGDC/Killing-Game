@@ -48,19 +48,19 @@ public class NodeOutput : ScriptableObject
 	/// </summary>
 	public void SetRect (Rect labelRect) 
 	{
-		rect = new Rect (body.rect.x + labelRect.x, 
-		                 body.rect.y + labelRect.y, 
-		                 body.rect.width - labelRect.x, 
+		rect = new Rect (body.rect.x, 
+		                 body.rect.y + labelRect.y,
+		                 labelRect.width + labelRect.x,
 		                 labelRect.height);
 	}
 	
 	/// <summary>
-	/// Get the rect of the knob right to the output
+	/// Get the rect of the knob left to the input
 	/// </summary>
 	public Rect GetKnob () 
 	{
 		int knobSize = Node_Editor.editor.knobSize;
-		return new Rect (rect.x + rect.width, 
+		return new Rect (rect.x - knobSize,
 		                 rect.y + (rect.height - knobSize) / 2, 
 		                 knobSize, knobSize);
 	}

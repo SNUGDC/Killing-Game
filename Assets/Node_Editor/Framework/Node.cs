@@ -209,8 +209,6 @@ public abstract class Node : ScriptableObject
 			}
 			input.connection = output;
 			output.connections.Add (input);
-
-			Node_Editor.editor.RecalculateFrom (input.body);
 		}
 	}
 

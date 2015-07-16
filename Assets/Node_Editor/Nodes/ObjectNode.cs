@@ -55,6 +55,7 @@ public class ObjectNode : Node
 		Inputs[0].DisplayLayout();
 		GUILayout.Label("이름");
 		baseObject.name = GUILayout.TextField(baseObject.name);
+		Outputs[0].DisplayLayout();
 		GUILayout.EndHorizontal();
 		crimeObject.isActive = EditorGUILayout.Toggle("활성화", crimeObject.isActive);
 		GUILayout.Label("기본 스프라이트");
