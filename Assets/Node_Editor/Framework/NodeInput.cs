@@ -20,6 +20,13 @@ public class NodeInput : ScriptableObject
 		NodeBody.Inputs.Add (input);
 		return input;
 	}
+	public static NodeInput Create(string InputName, Type InputType)
+	{
+		NodeInput input = NodeInput.CreateInstance (typeof (NodeInput)) as NodeInput;
+		input.type = InputType.AssemblyQualifiedName;
+		input.name = InputName;
+		return input;
+	}
 
 	/// <summary>
 	/// Function to automatically draw and update the input with a label for it's name

@@ -18,6 +18,15 @@ public class ObjectNode : Node
 	public CrimeObject crimeObject;
 	public List<SelectManager> selections = new List<SelectManager>();
 	
+	public class Selection
+	{
+		public NodeInput Input;
+		public Selection()
+		{
+			
+		}
+	}
+	
 	public static ObjectNode Create (Rect NodeRect) 
 	{ // This function has to be registered in Node_Editor.ContextCallback
 		ObjectNode node = ScriptableObject.CreateInstance <ObjectNode> ();
