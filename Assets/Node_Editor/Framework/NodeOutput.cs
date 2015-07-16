@@ -37,7 +37,6 @@ public class NodeOutput : ScriptableObject
 	public void DisplayLayout (GUIContent content) 
 	{
 		GUIStyle style = new GUIStyle (UnityEditor.EditorStyles.label);
-		style.alignment = TextAnchor.MiddleRight;
 		GUILayout.Label (content, style);
 		if (Event.current.type == EventType.Repaint) 
 			SetRect (GUILayoutUtility.GetLastRect ());

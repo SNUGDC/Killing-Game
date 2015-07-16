@@ -182,17 +182,17 @@ public abstract class Node : ScriptableObject
 		if (input == null || output == null)
 			return false;
 
-		if (input.body == output.body || input.connection == output)
+		if (input.connection == output)
 			return false;
 
 		if (input.type != output.type)
 			return false;
 
-		if (output.body.isChildOf (input.body)) 
-		{
-			Node_Editor.editor.ShowNotification (new GUIContent ("Recursion detected!"));
-			return false;
-		}
+		//  if (output.body.isChildOf (input.body)) 
+		//  {
+		//  	Node_Editor.editor.ShowNotification (new GUIContent ("Recursion detected!"));
+		//  	return false;
+		//  }
 		return true;
 	}
 

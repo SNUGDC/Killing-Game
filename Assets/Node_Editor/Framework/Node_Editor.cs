@@ -256,7 +256,7 @@ public class Node_Editor : EditorWindow
 		{
 			if (connectOutput != null) 
 			{ // Apply a connection if theres a clicked input
-				if (clickedNode != null && !clickedNode.Outputs.Contains (connectOutput)) 
+				if (clickedNode != null )//&& !clickedNode.Outputs.Contains (connectOutput)) 
 				{	// If an input was clicked, it'll will now be connected
 					NodeInput clickedInput = clickedNode.GetInputAtPos (mousePos);
 					if (Node.CanApplyConnection (connectOutput, clickedInput)) 
@@ -401,7 +401,7 @@ public class Node_Editor : EditorWindow
 	/// <summary>
 	/// Draws a node curve from start to end (with three shades of shadows! :O )
 	/// </summary>
-	public static void DrawNodeCurve (Vector2 start, Vector2 end) 
+	public static void DrawNodeCurve (Vector2 end, Vector2 start) 
 	{
 		Vector3 startPos = new Vector3 (start.x, start.y);
 		Vector3 endPos = new Vector3 (end.x, end.y);

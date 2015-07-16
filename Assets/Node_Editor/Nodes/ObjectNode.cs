@@ -6,10 +6,6 @@ using KillingGame.CrimeScene;
 [System.Serializable]
 public class ObjectNode : Node 
 {
-	public enum CalcType { Add, Substract, Multiply, Divide }
-	public CalcType type = CalcType.Add;
-	public float Input1Val = 1f;
-	public float Input2Val = 1f;
 	public bool isDraw = false;
 	
 	public string[] selectOptions = new string[] {"스프라이트 변경", "활성화 상태 변경", "사운드 재생", "메시지 출력", "아이템 획득", "위험도 증가"};
@@ -17,10 +13,15 @@ public class ObjectNode : Node
 	public GameObject baseObject;
 	public CrimeObject crimeObject;
 	public List<SelectManager> selections = new List<SelectManager>();
+	public Dictionary<NodeOutput, Selection> selects = new Dictionary<NodeOutput, Selection>();
+	
+	
 	
 	public class Selection
 	{
-		public NodeInput Input;
+		public SelectManager selectManager;
+		public Dictionary<NodeInput, IExecutable> functions = new Dictionary<NodeInput, IExecutable>();
+		
 		public Selection()
 		{
 			
@@ -96,7 +97,7 @@ public class ObjectNode : Node
 		GUILayout.EndHorizontal();
 		selections[i].isActive = EditorGUILayout.Toggle("활성화", selections[i].isActive);
 		GUILayout.BeginHorizontal();
-		EditorGUILayout.Popup("종류", selectOptionIndex, selectOptions);
+		selectOptionIndex = EditorGUILayout.Popup("종류", selectOptionIndex, selectOptions);
 		if(GUILayout.Button("기능 추가"))
 		{
 			
@@ -105,6 +106,11 @@ public class ObjectNode : Node
 		
 		
 		GUILayout.Space(10);
+	}
+	
+	private void DrawSelectFunction()
+	{
+		
 	}
 	
 	public override void OnDelete () 
