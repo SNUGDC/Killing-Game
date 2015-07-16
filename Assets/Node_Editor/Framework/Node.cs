@@ -18,7 +18,6 @@ public abstract class Node : ScriptableObject
 	/// </summary>
 	protected void Init () 
 	{
-		Calculate ();
 		Node_Editor.editor.nodeCanvas.nodes.Add (this);
 		if (!String.IsNullOrEmpty (AssetDatabase.GetAssetPath (Node_Editor.editor.nodeCanvas)))
 		{
@@ -37,12 +36,6 @@ public abstract class Node : ScriptableObject
 	/// Function implemented by the children to draw the node
 	/// </summary>
 	public abstract void DrawNode ();
-
-	/// <summary>
-	/// Function implemented by the children to calculate their outputs
-	/// Should return Success/Fail
-	/// </summary>
-	public abstract bool Calculate ();
 
 	/// <summary>
 	/// Draws the node curves as well as the knobs	

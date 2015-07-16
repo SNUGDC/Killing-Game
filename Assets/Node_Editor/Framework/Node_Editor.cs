@@ -129,10 +129,6 @@ public class Node_Editor : EditorWindow
 		{
 			NewNodeCanvas ();
 		}
-		if (GUILayout.Button (new GUIContent ("Recalculate All", "Starts to calculate from the beginning off."), nodeButton)) 
-		{
-			RecalculateAll ();
-		}
 		knobSize = EditorGUILayout.IntSlider (new GUIContent ("Handle Size", "The size of the handles of the Node Inputs/Outputs"), knobSize, 8, 32);
 	}
 
@@ -143,76 +139,11 @@ public class Node_Editor : EditorWindow
 	List<Node> workList;
 
 	/// <summary>
-	/// Recalculate from every Input Node.
-	/// Usually does not need to be called at all, the smart calculation system is doing the job just fine
-	/// </summary>
-	public void RecalculateAll () 
-	{
-		workList = new List<Node> ();
-		for (int nodeCnt = 0; nodeCnt < nodeCanvas.nodes.Count; nodeCnt++) 
-		{
-			if (nodeCanvas.nodes [nodeCnt].Inputs.Count == 0) 
-			{
-				workList.Add (nodeCanvas.nodes [nodeCnt]);
-				ClearChildrenInput (nodeCanvas.nodes [nodeCnt]);
-			}
-		}
-		Calculate ();
-	}
-
-	/// <summary>
-	/// Recalculate from node. 
-	/// Usually does not need to be called manually
-	/// </summary>
-	public void RecalculateFrom (Node node) 
-	{
-		workList = new List<Node> { node };
-		ClearChildrenInput (node);
-		Calculate ();
-	}
-
-	/// <summary>
-	/// Iterates through the worklist and calculates everything, including children
-	/// </summary>
-	private void Calculate () 
-	{
-		// this blocks iterates through the worklist and starts calculating
-		// if a node returns false state it stops and adds the node to the worklist
-		// later on, this worklist is reworked
-		bool limitReached = false;
-		for (int roundCnt = 0; !limitReached; roundCnt++)
-		{ // Runs until every node that can be calculated are calculated
-			limitReached = true;
-			for (int workCnt = 0; workCnt < workList.Count; workCnt++) 
-			{
-				Node node = workList [workCnt];
-				if (node.Calculate ())
-				{ // finished Calculating, continue with the children
-					for (int outCnt = 0; outCnt < node.Outputs.Count; outCnt++)
-					{
-						NodeOutput output = node.Outputs [outCnt];
-						for (int conCnt = 0; conCnt < output.connections.Count; conCnt++)
-							ContinueCalculation (output.connections [conCnt].body);
-					}
-					if (workList.Contains (node))
-						workList.Remove (node);
-					limitReached = false;
-				}
-				else if (!workList.Contains (node)) 
-				{ // Calculate returned false state (due to missing inputs / whatever), add it to check later
-					workList.Add (node);
-				}
-			}
-		}
-	}
-
-	/// <summary>
 	/// A recursive function to clear all inputs that depend on the outputs of node. 
 	/// Usually does not need to be called manually
 	/// </summary>
 	private void ClearChildrenInput (Node node) 
 	{
-		node.Calculate ();
 		for (int outCnt = 0; outCnt < node.Outputs.Count; outCnt++)
 		{
 			NodeOutput output = node.Outputs [outCnt];
@@ -222,26 +153,6 @@ public class Node_Editor : EditorWindow
 		}
 	}
 
-	/// <summary>
-	/// Continues calculation on this node to all the child nodes
-	/// Usually does not need to be called manually
-	/// </summary>
-	private void ContinueCalculation (Node node) 
-	{
-		if (node.Calculate ())
-		{ // finished Calculating, continue with the children
-			for (int outCnt = 0; outCnt < node.Outputs.Count; outCnt++)
-			{
-				NodeOutput output = node.Outputs [outCnt];
-				for (int conCnt = 0; conCnt < output.connections.Count; conCnt++)
-				{
-					ContinueCalculation (output.connections [conCnt].body);
-				}
-			}
-		}
-		else if (!workList.Contains (node))
-			workList.Add (node);
-	}
 	#endregion
 
 	#region Events
@@ -318,7 +229,6 @@ public class Node_Editor : EditorWindow
 							connectOutput = nodeInput.connection;
 							nodeInput.connection.connections.Remove (nodeInput);
 							nodeInput.connection = null;
-							RecalculateFrom (clickedNode);
 							e.Use();
 						} // Nothing interesting for us in the node clicked, so let the event pass to gui elements
 					}
@@ -334,7 +244,7 @@ public class Node_Editor : EditorWindow
 				else if (e.button == 1) 
 				{ // Right click -> Editor Context Click
 					GenericMenu menu = new GenericMenu ();					
-					menu.AddItem(new GUIContent("Add Object Node"), false, ContextCallback, "objectNode");
+					menu.AddItem(new GUIContent("오브젝트 추가"), false, ContextCallback, "objectNode");
 					menu.AddSeparator("");
 					
 					menu.ShowAsContext ();
