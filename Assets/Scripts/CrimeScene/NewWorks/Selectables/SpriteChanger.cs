@@ -11,6 +11,8 @@ namespace KillingGame.CrimeScene
 		
 		public void Execute()
 		{
+			if (!target)
+				return;
 			CrimeObject crimeObject = target.GetComponent<CrimeObject>();
 			if (crimeObject == null)
 				return;
@@ -21,6 +23,14 @@ namespace KillingGame.CrimeScene
 			}
 			if (selectedSprite != null)
 				crimeObject.selectedSprite = selectedSprite;
+		}
+		public int ReturnIndex()
+		{
+			return 0;
+		}
+		public void SetTarget(GameObject target)
+		{
+			this.target = target;
 		}
 	}
 }

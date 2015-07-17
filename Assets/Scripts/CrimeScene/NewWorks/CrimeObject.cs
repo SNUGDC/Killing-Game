@@ -13,11 +13,13 @@ namespace KillingGame.CrimeScene
 	}
 	public class CrimeObject : MonoBehaviour, IEnable 
 	{
-		public bool isActive;
+		public bool isActive = true;
 		public Sprite baseSprite;
 		public Sprite selectedSprite;
 		Dictionary<string, Selectable> selectables;
-
+		List<GameObject> selectList = new List<GameObject>();
+		List<GameObject> activeList = new List<GameObject>();
+		
 		GameObject[] selectButtons;
 		
 		public void SetEnable(EnableOption option)
@@ -43,6 +45,13 @@ namespace KillingGame.CrimeScene
 			foreach(Selectable item in GetComponents<Selectable>())
 			{
 				selectables.Add(item.label, item);
+			}
+			foreach(Transform child in transform)
+			{
+				if(child.GetComponent<SelectManager>())
+				{
+					selectList.Add(child.gameObject);
+				}
 			}
 		}
 		
@@ -80,23 +89,27 @@ namespace KillingGame.CrimeScene
 			CrimeManager.Instance.isGUI = true;
 			if (selectedSprite != null)
 				GetComponent<SpriteRenderer>().sprite = selectedSprite;
-			Dictionary<string, Selectable> activeDic = new Dictionary<string, Selectable>();
-			foreach (var item in selectables)
+			
+			activeList = new List<GameObject>();
+			
+			foreach (GameObject item in selectList)
 			{
-				if (item.Value.isActive)
-					activeDic.Add(item.Key, item.Value);
+				if (item.GetComponent<SelectManager>().isActive)
+					activeList.Add(item);
 			}
-			selectButtons = new GameObject[activeDic.Count + 1];
+			selectButtons = new GameObject[activeList.Count + 1];
 			int i = 0;
-			foreach (var item in activeDic)
+			foreach (GameObject item in activeList)
 			{
-				selectButtons[i] = Instantiate(Resources.Load("Prefabs/Select")) as GameObject;
+				selectButtons[i] = Instantiate(Resources.Load("Prefabs/UI/Select")) as GameObject;
+				selectButtons[i].transform.Find("Label").GetComponent<TextMesh>().text = item.GetComponent<SelectManager>().label;
 				selectButtons[i].transform.position = transform.position + 1.5f * i * Vector3.down + 3 * Vector3.right;
 				selectButtons[i].GetComponent<SelectableButton>().crimeObject = this;
-				selectButtons[i].GetComponent<SelectableButton>().selectable = item.Value;
+				selectButtons[i].GetComponent<SelectableButton>().selectable = item;
 				i++;
 			}
-			selectButtons[i] = Instantiate(Resources.Load("Prefabs/Select")) as GameObject;
+			selectButtons[i] = Instantiate(Resources.Load("Prefabs/UI/Select")) as GameObject;
+			selectButtons[i].transform.Find("Label").GetComponent<TextMesh>().text = "취소";
 			selectButtons[i].transform.position = transform.position + 1.5f * i * Vector3.down + 3 * Vector3.right;
 			selectButtons[i].GetComponent<SelectableButton>().crimeObject = this;
 		}

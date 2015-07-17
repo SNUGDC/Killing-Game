@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 namespace KillingGame.CrimeScene
 {
@@ -7,10 +8,11 @@ namespace KillingGame.CrimeScene
 		public static CrimeManager Instance;
 		public bool isGUI = false;
 		public GameObject messageHolder;
-		public float maxTime;
+		public float maxTime = 15;
 		float currentTime;
 		public GameObject needle;
 		public int dangerCount;
+		public List<GameObject> itemList;
 		
 		void Awake()
 		{
@@ -31,7 +33,9 @@ namespace KillingGame.CrimeScene
 		}
 		public void ShowMessage(string[] texts)
 		{
-			
+			isGUI = true;
+			messageHolder.SetActive(true);
+			messageHolder.GetComponent<MessageShow>().getMessages(texts);
 		}
 		
 		public void spendTime(float timeSpent)
@@ -40,11 +44,16 @@ namespace KillingGame.CrimeScene
 			if (currentTime > maxTime)
 				Application.LoadLevel("GameOver");
 			showTime();
+			Debug.Log(currentTime);
 		}
 		
 		public void SpendTime(float timeSpent)
 		{
-			
+			currentTime += timeSpent;
+			if (currentTime > maxTime)
+				Application.LoadLevel("GameOver");
+			showTime();
+			Debug.Log(currentTime);
 		}
 		
 		void showTime()

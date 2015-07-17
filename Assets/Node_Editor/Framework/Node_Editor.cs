@@ -129,6 +129,10 @@ public class Node_Editor : EditorWindow
 		{
 			NewNodeCanvas ();
 		}
+		if (GUILayout.Button (new GUIContent ("Apply to Scene", "Creates a new Canvas (remember to save the previous one to a referenced Canvas Asset File at least once before! Else it'll be lost!)"), nodeButton)) 
+		{
+			ApplyChanges();
+		}
 		knobSize = EditorGUILayout.IntSlider (new GUIContent ("Handle Size", "The size of the handles of the Node Inputs/Outputs"), knobSize, 8, 32);
 	}
 
@@ -152,7 +156,16 @@ public class Node_Editor : EditorWindow
 				ClearChildrenInput (output.connections [conCnt].body);
 		}
 	}
-
+	
+	private void ApplyChanges()
+	{
+		int cnt = nodeCanvas.nodes.Count;
+		for (int i=0; i<cnt; i++)
+		{
+			nodeCanvas.nodes[i].Apply();		
+		}
+	}
+	
 	#endregion
 
 	#region Events

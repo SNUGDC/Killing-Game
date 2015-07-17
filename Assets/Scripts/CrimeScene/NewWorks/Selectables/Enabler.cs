@@ -14,5 +14,14 @@ namespace KillingGame.CrimeScene
 			if (enable != null)
 				enable.SetEnable(option);
 		}
+		public int ReturnIndex()
+		{
+			return 1;
+		}
+		
+		public void SetTarget(GameObject target)
+		{
+			this.target = target;
+		}
 	}
 }

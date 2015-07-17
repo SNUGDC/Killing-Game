@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 public abstract class Node : ScriptableObject
 {
 	public Rect rect = new Rect ();
-
+	public GameObject baseObject;
 	public List<NodeInput> Inputs = new List<NodeInput> ();
 	public List<NodeOutput> Outputs = new List<NodeOutput> ();
 
@@ -211,6 +211,7 @@ public abstract class Node : ScriptableObject
 			output.connections.Add (input);
 		}
 	}
-
+	
+	public abstract void Apply();
 	#endregion
 }

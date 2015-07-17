@@ -5,12 +5,14 @@ namespace KillingGame.CrimeScene
 {
 	public class SelectableButton : MonoBehaviour 
 	{
-		public Selectable selectable;
+		public GameObject selectable;
 		public CrimeObject crimeObject;
 		void OnMouseDown()
 		{
-			if (selectable!=null)
-				selectable.execute();
+			if (selectable)
+			{
+				selectable.GetComponent<SelectManager>().ExecuteSelect();
+			}
 			crimeObject.onCancelThis();
 		}
 	}	

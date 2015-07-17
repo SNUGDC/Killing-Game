@@ -6,11 +6,13 @@ namespace KillingGame.CrimeScene
 	public interface IExecutable
 	{
 		void Execute();
+		int ReturnIndex();
+		void SetTarget(GameObject target);
 	}
 	
 	public class SelectManager : MonoBehaviour, IEnable
 	{
-		public bool isActive;
+		public bool isActive = true;
 		public string label;
 		public float requireTime;
 		public int displayOrder;
@@ -26,7 +28,7 @@ namespace KillingGame.CrimeScene
 					CrimeManager.Instance.dangerCount += dangerCount;
 			}
 		}
-		public Dangers dangers;
+		public Dangers dangers = new Dangers();
 		
 		public void SetEnable(EnableOption option)
 		{
@@ -44,14 +46,13 @@ namespace KillingGame.CrimeScene
 			}
 		}
 		
-		void OnMouseDown()
+		public void ExecuteSelect()
 		{
-			if (!isActive || CrimeManager.Instance.isGUI)
+			if (!isActive)
 				return;
-			
+			gameObject.SendMessage("Execute");
 			CrimeManager.Instance.SpendTime(requireTime);
 			dangers.ApplyDanger();
-			gameObject.SendMessage("Execute");
 		}
 	}
 }
