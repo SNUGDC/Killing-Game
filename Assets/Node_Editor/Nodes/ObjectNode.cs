@@ -56,6 +56,7 @@ public class ObjectNode : Node
 		baseObject.name = EditorGUILayout.TextField(baseObject.name);	
 		GUILayout.EndHorizontal();
 		crimeObject.isActive = EditorGUILayout.Toggle("활성화", crimeObject.isActive);
+		crimeObject.useAsRoute = EditorGUILayout.Toggle("조건 노드로 사용하기", crimeObject.useAsRoute);		
 		GUILayout.Label("기본 스프라이트");
 		crimeObject.baseSprite = EditorGUILayout.ObjectField (crimeObject.baseSprite, typeof(Sprite), true) as Sprite;
 		GUILayout.Label("선택 스프라이트");
@@ -159,9 +160,9 @@ public class ObjectNode : Node
 			case 0:
 				GUILayout.BeginHorizontal();
 				GUILayout.Label("기본 스프라이트");
-				((SpriteChanger)selects[outPut].functions[inPut]).baseSprite = EditorGUILayout.ObjectField (crimeObject.baseSprite, typeof(Sprite), true) as Sprite;
+				((SpriteChanger)selects[outPut].functions[inPut]).baseSprite = EditorGUILayout.ObjectField (((SpriteChanger)selects[outPut].functions[inPut]).baseSprite, typeof(Sprite), true) as Sprite;
 				GUILayout.Label("선택 스프라이트");
-				((SpriteChanger)selects[outPut].functions[inPut]).selectedSprite = EditorGUILayout.ObjectField (crimeObject.selectedSprite, typeof(Sprite), true) as Sprite;
+				((SpriteChanger)selects[outPut].functions[inPut]).selectedSprite = EditorGUILayout.ObjectField (((SpriteChanger)selects[outPut].functions[inPut]).selectedSprite, typeof(Sprite), true) as Sprite;
 				GUILayout.EndHorizontal();
 			break;
 			case 1:

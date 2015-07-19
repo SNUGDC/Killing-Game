@@ -13,6 +13,7 @@ namespace KillingGame.CrimeScene
 	}
 	public class CrimeObject : MonoBehaviour, IEnable 
 	{
+		public bool useAsRoute = false;
 		public bool isActive = true;
 		public Sprite baseSprite;
 		public Sprite selectedSprite;
@@ -28,6 +29,11 @@ namespace KillingGame.CrimeScene
 			{
 				case EnableOption.enable:
 					isActive = true;
+					if (useAsRoute)
+						foreach (Transform child in transform)
+						{
+							child.gameObject.SendMessage("Execute");
+						}
 					break;
 				case EnableOption.disable:
 					isActive = false;
