@@ -19,10 +19,10 @@ namespace KillingGame.CrimeScene
 		{
 			return 4;
 		}
+
 		public void SetTarget(GameObject target)
 		{
 			this.target = target;
 		}		
 	}
 }
-
