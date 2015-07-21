@@ -3,7 +3,8 @@ using System;
 
 namespace KillingGame.CrimeScene
 {
-	public class MessageDisplayer : MonoBehaviour, IExecutable
+	[System.Serializable]	
+	public class MessageDisplayer : IExecutable
 	{
 		public string inputMessage;
 		public void Execute()
@@ -17,7 +18,7 @@ namespace KillingGame.CrimeScene
 		{
 			return 3;
 		}
-		public void SetTarget(GameObject target)
+		public void SetTarget(IEnable target)
 		{
 			
 		}

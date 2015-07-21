@@ -3,69 +3,60 @@ using System.Collections.Generic;
 
 namespace KillingGame.CrimeScene
 {
-	public enum EnableOption
+	public class CrimeObject : MonoBehaviour
 	{
-		enable, disable, erase
-	}
-	public interface IEnable
-	{
-		void SetEnable(EnableOption option);
-	}
-	public class CrimeObject : MonoBehaviour, IEnable 
-	{
-		public bool useAsRoute = false;
-		public bool isActive = true;
-		public Sprite baseSprite;
-		public Sprite selectedSprite;
-		List<GameObject> selectList = new List<GameObject>();
-		List<GameObject> activeList = new List<GameObject>();
-		
-		GameObject[] selectButtons;
-		
-		public void SetEnable(EnableOption option)
+		void Start()
 		{
-			switch (option)
+			if (_manager == null)
+				Debug.Log("Sigh");
+			Debug.Log(_manager.isActive);
+		}
+		
+		private CrimeObjectManager _manager = new CrimeObjectManager();
+		public CrimeObjectManager Manager
+		{
+			get	
 			{
-				case EnableOption.enable:
-					isActive = true;
-					if (useAsRoute)
-						foreach (Transform child in transform)
-						{
-							child.gameObject.SendMessage("Execute");
-						}
-					break;
-				case EnableOption.disable:
-					isActive = false;
-					break;
-				case EnableOption.erase:
-					Destroy(gameObject);
-					break;
+				return _manager;
+			}
+			set
+			{
+				_manager = value;
+				if (rend == null)
+					rend = gameObject.AddComponent<SpriteRenderer>();
+				rend.sprite = _manager.selectedSprite;
+				gameObject.name = _manager.label;
 			}
 		}
-
-		public void onTouchThis()
+		public void Init()
 		{
-			if (!isActive || CrimeManager.Instance.isGUI)
+			if (rend == null)
+				rend = gameObject.AddComponent<SpriteRenderer>();
+			rend.sprite = _manager.selectedSprite;
+			gameObject.name = _manager.label;
+		}
+		GameObject[] selectButtons;
+		SpriteRenderer rend;
+		public void OnTouchThis()
+		{
+			if (_manager == null)
+				return;
+			if (!_manager.isActive || CrimeManager.Instance.isGUI)
 				return;
 			CrimeManager.Instance.isGUI = true;
-			if (selectedSprite != null)
-				GetComponent<SpriteRenderer>().sprite = selectedSprite;
+			if (_manager.selectedSprite != null)
+				GetComponent<SpriteRenderer>().sprite = _manager.selectedSprite;
 			
-			activeList = new List<GameObject>();
+			List<SelectManager> activeList = _manager.GetActiveList();
 			
-			foreach (GameObject item in selectList)
-			{
-				if (item.GetComponent<SelectManager>().isActive)
-					activeList.Add(item);
-			}
 			if (activeList.Count == 0)
 				return;
 			selectButtons = new GameObject[activeList.Count + 1];
 			int i = 0;
-			foreach (GameObject item in activeList)
+			foreach (SelectManager item in activeList)
 			{
 				selectButtons[i] = CrimeManager.Instance.GetButton();
-				selectButtons[i].transform.Find("Label").GetComponent<TextMesh>().text = item.name;
+				selectButtons[i].transform.Find("Label").GetComponent<TextMesh>().text = item.label;
 				selectButtons[i].transform.position = transform.position + 1f * i * Vector3.down + 3 * Vector3.right;
 				selectButtons[i].GetComponent<SelectableButton>().crimeObject = this;
 				selectButtons[i].GetComponent<SelectableButton>().selectable = item;
@@ -76,9 +67,10 @@ namespace KillingGame.CrimeScene
 			selectButtons[i].transform.position = transform.position + 1f * i * Vector3.down + 3 * Vector3.right;
 			selectButtons[i].GetComponent<SelectableButton>().crimeObject = this;
 		}
-		public void onCancelThis()
+		public void OnCancelThis()
 		{
-			GetComponent<SpriteRenderer>().sprite = baseSprite;
+			Debug.Log("Clicked");
+			GetComponent<SpriteRenderer>().sprite = _manager.baseSprite;
 			foreach (GameObject button in selectButtons)
 			{
 				Destroy(button);
@@ -89,7 +81,7 @@ namespace KillingGame.CrimeScene
 		
 		void OnMouseDown()
 		{
-			onTouchThis();
+			OnTouchThis();
 		}
 	}
 }

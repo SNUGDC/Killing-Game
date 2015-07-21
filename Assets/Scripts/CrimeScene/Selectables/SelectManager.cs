@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace KillingGame.CrimeScene
 {
@@ -7,21 +7,22 @@ namespace KillingGame.CrimeScene
 	{
 		void Execute();
 		int ReturnIndex();
-		void SetTarget(GameObject target);
+		void SetTarget(IEnable target);
 	}
 	
-	public class SelectManager : MonoBehaviour, IEnable
+	[System.Serializable]	
+	public class SelectManager : IEnable
 	{
+		public string label = "";
 		public bool isActive = true;
 		public bool isOnce = false;
-		public string label;
+		public bool isDestroyed = false;
 		public float requireTime;
 		public int displayOrder;
 		
-		[System.Serializable]
 		public class Dangers
 		{
-			public bool isActive;
+			public bool isActive = true;
 			public int dangerCount;
 			public void ApplyDanger()
 			{
@@ -29,10 +30,15 @@ namespace KillingGame.CrimeScene
 					CrimeManager.Instance.dangerCount += dangerCount;
 			}
 		}
+		
+		public List<IExecutable> functions = new List<IExecutable>();
+		
 		public Dangers dangers = new Dangers();
 		
 		public void SetEnable(EnableOption option)
 		{
+			if (isDestroyed)
+				return;
 			switch (option)
 			{
 				case EnableOption.enable:
@@ -42,7 +48,8 @@ namespace KillingGame.CrimeScene
 					isActive = false;
 					break;
 				case EnableOption.erase:
-					Destroy(gameObject);
+					isActive = false;
+					isDestroyed = true;
 					break;
 			}
 		}
@@ -51,11 +58,14 @@ namespace KillingGame.CrimeScene
 		{
 			if (!isActive)
 				return;
-			gameObject.SendMessage("Execute");
+			foreach (IExecutable item in functions)
+			{
+				item.Execute();
+			}
 			CrimeManager.Instance.SpendTime(requireTime);
 			dangers.ApplyDanger();
 			if (isOnce)
-				Destroy(gameObject);
+				isDestroyed = true;
 		}
 	}
 }

@@ -11,32 +11,36 @@ public class ObjectNode : Node
 	bool isExpanded = true;
 	public string[] selectOptions = new string[] {"스프라이트 변경", "활성화 상태 변경", "사운드 재생", "메시지 출력", "아이템 획득", "위험도 변경", "이미지 출력"};
 	public int selectOptionIndex = 0;
-	public CrimeObject crimeObject;
 	public Dictionary<NodeOutput, Selection> selects = new Dictionary<NodeOutput, Selection>();
 	
 	public class Selection
 	{
 		public SelectManager selectManager;
 		public Dictionary<NodeInput, IExecutable> functions = new Dictionary<NodeInput, IExecutable>();
-		
-		public Selection(GameObject baseObject)
+		public Selection(CrimeObjectManager manager)
 		{
-			GameObject selectionHolder = new GameObject();
-			selectManager = selectionHolder.AddComponent<SelectManager>();
-			selectionHolder.transform.parent = baseObject.transform;
+			selectManager = new SelectManager();
+			manager.selectList.Add(selectManager);
 		}
 	}
 	
 	public static ObjectNode Create (Rect NodeRect) 
 	{ // This function has to be registered in Node_Editor.ContextCallback
 		ObjectNode node = ScriptableObject.CreateInstance <ObjectNode> ();
-		node.baseObject = new GameObject();
-		node.baseObject.transform.parent = GameObject.Find("CrimeObjects").transform;
- 		node.baseObject.name = "새 오브젝트";
-		node.baseObject.AddComponent<BoxCollider2D>();
-		node.baseObject.AddComponent<SpriteRenderer>();
-		node.crimeObject = node.baseObject.AddComponent<CrimeObject>();
-		node.name = "오브젝트";
+		node.manager = new CrimeObjectManager();
+		if (node.baseObject == null)
+		{
+			node.baseObject = new GameObject();
+			node.baseObject.AddComponent<CrimeObject>();
+			node.baseObject.AddComponent<SpriteRenderer>();
+		}
+		node.manager = node.baseObject.GetComponent<CrimeObject>().Manager;
+		
+		//  node.tempObject.transform.parent = GameObject.Find("TempObjects").transform;
+ 		//  node.tempObject.AddComponent<CrimeObject>().Manager = new CrimeObjectManager();
+		//  node.manager = node.tempObject.GetComponent<CrimeObject>().Manager;
+		//  node.tempObject.name = "새 오브젝트";
+		//  node.name = "오브젝트";
 		node.rect = NodeRect;
 
 		NodeOutput.Create (node, "오브젝트 입력", typeof (float));
@@ -54,10 +58,10 @@ public class ObjectNode : Node
 		GUILayout.BeginHorizontal();
 		
 		GUILayout.Label("이름");
-		baseObject.name = EditorGUILayout.TextField(baseObject.name);
+		manager.label = EditorGUILayout.TextField(manager.label);
 		GUILayout.EndHorizontal();
-		crimeObject.isActive = EditorGUILayout.Toggle("활성화", crimeObject.isActive);
-		crimeObject.useAsRoute = EditorGUILayout.Toggle("조건 노드로 사용하기", crimeObject.useAsRoute);
+		manager.isActive = EditorGUILayout.Toggle("활성화", manager.isActive);
+		manager.useAsRoute = EditorGUILayout.Toggle("조건 노드로 사용하기", manager.useAsRoute);
 		if (!isExpanded)
 		{
 			if(GUILayout.Button("자세히"))
@@ -76,12 +80,12 @@ public class ObjectNode : Node
 				DrawNode();
 			}
 			GUILayout.Label("기본 스프라이트");
-			crimeObject.baseSprite = EditorGUILayout.ObjectField (crimeObject.baseSprite, typeof(Sprite), true) as Sprite;
+			manager.baseSprite = EditorGUILayout.ObjectField (manager.baseSprite, typeof(Sprite), true) as Sprite;
 			GUILayout.Label("선택 스프라이트");
-			crimeObject.selectedSprite = EditorGUILayout.ObjectField (crimeObject.selectedSprite, typeof(Sprite), true) as Sprite;
+			manager.selectedSprite = EditorGUILayout.ObjectField (manager.selectedSprite, typeof(Sprite), true) as Sprite;
 			if(GUILayout.Button("선택지 추가"))
 			{
-				Selection selection = new Selection(baseObject);
+				Selection selection = new Selection(manager);
 				NodeOutput key = NodeOutput.Create(this, "선택지 입력", typeof(float));
 				selects.Add(key, selection);
 				DrawNode();
@@ -95,10 +99,9 @@ public class ObjectNode : Node
 			DrawSelect(item);
 		}
 		GUILayout.EndVertical();
-		
 		GUILayout.EndHorizontal();
-		if(GUI.changed)
-			baseObject.GetComponent<SpriteRenderer>().sprite = crimeObject.baseSprite;
+		if (GUI.changed)
+			Apply();
 	}
 	
 	private void DrawSelect(NodeOutput outPut)
@@ -110,13 +113,14 @@ public class ObjectNode : Node
 		{
 			GUILayout.BeginHorizontal();
 			GUILayout.Label("이름");
-			if (selects.ContainsKey(outPut))
-				selects[outPut].selectManager.gameObject.name = EditorGUILayout.TextField(selects[outPut].selectManager.gameObject.name);
+			if (!selects.ContainsKey(outPut) || selects[outPut].selectManager == null)
+				return;
+			selects[outPut].selectManager.label = EditorGUILayout.TextField(selects[outPut].selectManager.label);
 			if(GUILayout.Button("선택지 삭제"))
 			{
 				if (!selects.ContainsKey(outPut))
 					return;
-				DestroyImmediate(selects[outPut].selectManager.gameObject);
+				manager.selectList.Remove(selects[outPut].selectManager);
 				selects.Remove(outPut);
 				Outputs.Remove(outPut);
 				Vector2 topLeft = rect.position;
@@ -146,27 +150,28 @@ public class ObjectNode : Node
 				switch (selectOptionIndex)
 				{
 					case 0:
-						executor = selects[outPut].selectManager.gameObject.AddComponent<SpriteChanger>();
+						executor = new SpriteChanger();
 					break;
 					case 1:
-						executor = selects[outPut].selectManager.gameObject.AddComponent<Enabler>();
+						executor = new Enabler();
 					break;
 					case 2:
-						executor = selects[outPut].selectManager.gameObject.AddComponent<SoundPlayer>();
+						executor = new SoundPlayer();
 					break;
 					case 3:
-						executor = selects[outPut].selectManager.gameObject.AddComponent<MessageDisplayer>();
+						executor = new MessageDisplayer();
 					break;
 					case 4:
-						executor = selects[outPut].selectManager.gameObject.AddComponent<ItemGainer>();
+						executor = new ItemGainer();
 					break;
 					case 5:
-						executor = selects[outPut].selectManager.gameObject.AddComponent<DangerChanger>();
+						executor = new DangerChanger();
 					break;
 					case 6:
-						executor = selects[outPut].selectManager.gameObject.AddComponent<SpriteShower>();
+						executor = new SpriteShower();
 					break;
 				}
+				selects[outPut].selectManager.functions.Add(executor);
 				selects[outPut].functions.Add(key, executor);
 				DrawNode();
 			}
@@ -198,7 +203,7 @@ public class ObjectNode : Node
 			{
 				if (!selects.ContainsKey(outPut) || !selects[outPut].functions.ContainsKey(inPut))
 					return;
-				DestroyImmediate((MonoBehaviour)selects[outPut].functions[inPut]);			
+				selects[outPut].selectManager.functions.Remove(selects[outPut].functions[inPut]);		
 				selects[outPut].functions.Remove(inPut);
 				try
 				{
@@ -271,29 +276,43 @@ public class ObjectNode : Node
 			inputList = new List<NodeInput> (selects[item].functions.Keys);
 			foreach (var key in inputList)
 			{
-				GameObject target = null;
+				IEnable target = null;
 				
 				if (key.connection == null)
 					continue;
 				
 				if (key.connection.body.Inputs.Count < 1 || key.connection == key.connection.body.Inputs[0])
 				{
-					target = key.connection.body.baseObject;
+					target = key.connection.body.manager;
 				}
 				else
 				{
 					if (((ObjectNode)key.connection.body).selects.ContainsKey(key.connection))
-						target = ((ObjectNode)key.connection.body).selects[key.connection].selectManager.gameObject;
+						target = ((ObjectNode)key.connection.body).selects[key.connection].selectManager;
 				}
 				Debug.Log(target);
 				selects[item].functions[key].SetTarget(target);
 			}
 		}
+		//  if (baseObject == null)
+		//  {
+		//  	baseObject = new GameObject();
+		//  	baseObject.transform.parent = GameObject.Find("CrimeObjects").transform;
+		//  	baseObject.transform.localPosition = 2 * Vector3.back;
+		//  	baseObject.AddComponent<CrimeObject>();
+		//  }
+		//  manager.GetCopy(baseObject.GetComponent<CrimeObject>().Manager);
+		//  baseObject.GetComponent<CrimeObject>().Init();
+		//  baseObject.GetComponent<SpriteRenderer>().sprite = manager.baseSprite;
+		//  baseObject.GetComponent<CrimeObject>().Manager = manager;
+		Collider2D coll = baseObject.GetComponent<Collider2D>();
+		if (coll != null)
+			DestroyImmediate(coll);	
+		baseObject.AddComponent<PolygonCollider2D>();
 	}
 	
 	public override void OnDelete () 
 	{
-		DestroyImmediate(baseObject);
 		base.OnDelete ();
 		// Always call this if we want our custom OnDelete operations!
 		// Else you can leave this out

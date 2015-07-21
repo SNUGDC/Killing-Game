@@ -3,7 +3,8 @@ using System;
 
 namespace KillingGame.CrimeScene
 {
-	public class SoundPlayer : MonoBehaviour, IExecutable
+	[System.Serializable]	
+	public class SoundPlayer : IExecutable
 	{
 		public AudioClip sound;
 		public void Execute()
@@ -16,7 +17,7 @@ namespace KillingGame.CrimeScene
 		{
 			return 2;
 		}
-		public void SetTarget(GameObject target)
+		public void SetTarget(IEnable target)
 		{
 			
 		}

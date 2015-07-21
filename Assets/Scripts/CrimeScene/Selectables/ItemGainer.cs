@@ -3,16 +3,16 @@ using System.Collections;
 
 namespace KillingGame.CrimeScene
 {
-	public class ItemGainer : MonoBehaviour, IExecutable
+	[System.Serializable]	
+	public class ItemGainer : IExecutable
 	{
-		public GameObject target;
-		
+		public IEnable target;	
 		
 		public void Execute()
 		{
 			if (target == null)
 				return;
-			CrimeManager.Instance.obtainItem(target);
+			//  CrimeManager.Instance.obtainItem(target);
 		}
 		
 		public int ReturnIndex()
@@ -20,7 +20,7 @@ namespace KillingGame.CrimeScene
 			return 4;
 		}
 
-		public void SetTarget(GameObject target)
+		public void SetTarget(IEnable target)
 		{
 			this.target = target;
 		}		

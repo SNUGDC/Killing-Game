@@ -1,27 +1,34 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System;
 
 namespace KillingGame.CrimeScene
 {
-	public class DangerChanger : MonoBehaviour, IExecutable
+	[System.Serializable]	
+	public class DangerChanger : IExecutable
 	{
-		public GameObject target;
+		public SelectManager target;
 		public int newDanger;
 		
 		public void Execute()
 		{
-			SelectManager selector = target.GetComponent<SelectManager>();
-			if (selector != null)
-				selector.dangers.dangerCount = newDanger;
+			if (target != null)
+				target.dangers.dangerCount = newDanger;
 		}
 		public int ReturnIndex()
 		{
 			return 5;
 		}
 		
-		public void SetTarget(GameObject target)
+		public void SetTarget(IEnable target)
 		{
-			this.target = target;
+			try
+			{
+				this.target = (SelectManager)target;	
+			}
+			catch (InvalidCastException e)
+			{
+				this.target = null;
+			}
 		}
 	}
 }

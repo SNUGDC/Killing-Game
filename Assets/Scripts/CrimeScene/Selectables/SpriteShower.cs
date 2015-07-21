@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 namespace KillingGame.CrimeScene
 {
-	public class SpriteShower : MonoBehaviour, IExecutable
+	[System.Serializable]	
+	public class SpriteShower : IExecutable
 	{
 		public List<Sprite> sprites = new List<Sprite>();
 		public void Execute()
@@ -16,7 +17,7 @@ namespace KillingGame.CrimeScene
 			return 6;
 		}
 		
-		public void SetTarget(GameObject target)
+		public void SetTarget(IEnable target)
 		{
 			
 		}

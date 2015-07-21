@@ -8,8 +8,10 @@ using Object = UnityEngine.Object;
 
 public abstract class Node : ScriptableObject
 {
+	public KillingGame.CrimeScene.CrimeObjectManager manager;
 	public Rect rect = new Rect ();
 	public GameObject baseObject;
+	public GameObject tempObject;
 	public List<NodeInput> Inputs = new List<NodeInput> ();
 	public List<NodeOutput> Outputs = new List<NodeOutput> ();
 

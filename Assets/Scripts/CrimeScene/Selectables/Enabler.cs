@@ -3,23 +3,23 @@ using System.Collections;
 
 namespace KillingGame.CrimeScene
 {
-	public class Enabler : MonoBehaviour, IExecutable
+	[System.Serializable]
+	public class Enabler : IExecutable
 	{
 		public EnableOption option;
-		public GameObject target;
+		public IEnable target;
 
 		public void Execute()
 		{
-			IEnable enable = target.GetComponent<IEnable>();
-			if (enable != null)
-				enable.SetEnable(option);
+			if (target != null)
+				target.SetEnable(option);
 		}
 		public int ReturnIndex()
 		{
 			return 1;
 		}
 		
-		public void SetTarget(GameObject target)
+		public void SetTarget(IEnable target)
 		{
 			this.target = target;
 		}
