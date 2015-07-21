@@ -98,7 +98,7 @@ public class ObjectNode : Node
 		
 		GUILayout.EndHorizontal();
 		if(GUI.changed)
-			baseObject.GetComponent<SpriteRenderer>().sprite = crimeObject.baseSprite;
+			Apply();
 	}
 	
 	private void DrawSelect(NodeOutput outPut)
