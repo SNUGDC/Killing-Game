@@ -239,15 +239,19 @@ public class ObjectNode : Node
 			inputList = new List<NodeInput> (selects[item].functions.Keys);
 			foreach (var key in inputList)
 			{
-				GameObject target;
-
-				if (key.connection == null || key.connection.body.Inputs.Count < 1 || key.connection == key.connection.body.Inputs[0])
+				GameObject target = null;
+				
+				if (key.connection == null)
+					continue;
+				
+				if (key.connection.body.Inputs.Count < 1 || key.connection == key.connection.body.Inputs[0])
 				{
 					target = key.connection.body.baseObject;
 				}
 				else
 				{
-					target = ((ObjectNode)key.connection.body).selects[key.connection].selectManager.gameObject;
+					if (((ObjectNode)key.connection.body).selects.ContainsKey(key.connection))
+						target = ((ObjectNode)key.connection.body).selects[key.connection].selectManager.gameObject;
 				}
 				Debug.Log(target);
 				selects[item].functions[key].SetTarget(target);
