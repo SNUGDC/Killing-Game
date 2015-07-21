@@ -103,20 +103,22 @@ namespace KillingGame.CrimeScene
 				if (item.GetComponent<SelectManager>().isActive)
 					activeList.Add(item);
 			}
+			if (activeList.Count == 0)
+				return;
 			selectButtons = new GameObject[activeList.Count + 1];
 			int i = 0;
 			foreach (GameObject item in activeList)
 			{
 				selectButtons[i] = Instantiate(Resources.Load("Prefabs/UI/Select")) as GameObject;
-				selectButtons[i].transform.Find("Label").GetComponent<TextMesh>().text = item.GetComponent<SelectManager>().label;
-				selectButtons[i].transform.position = transform.position + 1.5f * i * Vector3.down + 3 * Vector3.right;
+				selectButtons[i].transform.Find("Label").GetComponent<TextMesh>().text = item.name;
+				selectButtons[i].transform.position = transform.position + 1f * i * Vector3.down + 3 * Vector3.right;
 				selectButtons[i].GetComponent<SelectableButton>().crimeObject = this;
 				selectButtons[i].GetComponent<SelectableButton>().selectable = item;
 				i++;
 			}
 			selectButtons[i] = Instantiate(Resources.Load("Prefabs/UI/Select")) as GameObject;
 			selectButtons[i].transform.Find("Label").GetComponent<TextMesh>().text = "취소";
-			selectButtons[i].transform.position = transform.position + 1.5f * i * Vector3.down + 3 * Vector3.right;
+			selectButtons[i].transform.position = transform.position + 1f * i * Vector3.down + 3 * Vector3.right;
 			selectButtons[i].GetComponent<SelectableButton>().crimeObject = this;
 		}
 		public void onCancelThis()
@@ -126,7 +128,8 @@ namespace KillingGame.CrimeScene
 			{
 				Destroy(button);
 			}
-			CrimeManager.Instance.isGUI = false;
+			if (!CrimeManager.Instance.messageHolder.activeSelf || !CrimeManager.Instance.spriteShower.activeSelf)
+				CrimeManager.Instance.isGUI = false;
 		}
 		
 		void OnMouseDown()

@@ -8,6 +8,8 @@ namespace KillingGame.CrimeScene
 		public static CrimeManager Instance;
 		public bool isGUI = false;
 		public GameObject messageHolder;
+		public GameObject spriteShower;
+		public GameObject soundPlayer;
 		public float maxTime = 15;
 		float currentTime;
 		public GameObject needle;
@@ -38,6 +40,13 @@ namespace KillingGame.CrimeScene
 			messageHolder.GetComponent<MessageShow>().getMessages(texts);
 		}
 		
+		public void ShowSprite(List<Sprite> sprites)
+		{
+			isGUI = true;
+			spriteShower.SetActive(true);
+			spriteShower.GetComponent<SpriteShow>().GetSprites(sprites);
+		}
+		
 		public void spendTime(float timeSpent)
 		{
 			currentTime += timeSpent;
@@ -54,6 +63,11 @@ namespace KillingGame.CrimeScene
 				Application.LoadLevel("GameOver");
 			showTime();
 			Debug.Log(currentTime);
+		}
+		
+		public void PlaySound(AudioClip sound)
+		{
+			soundPlayer.GetComponent<AudioSource>().PlayOneShot(sound);
 		}
 		
 		void showTime()

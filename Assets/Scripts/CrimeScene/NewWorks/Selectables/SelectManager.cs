@@ -13,6 +13,7 @@ namespace KillingGame.CrimeScene
 	public class SelectManager : MonoBehaviour, IEnable
 	{
 		public bool isActive = true;
+		public bool isOnce = false;
 		public string label;
 		public float requireTime;
 		public int displayOrder;
@@ -53,6 +54,8 @@ namespace KillingGame.CrimeScene
 			gameObject.SendMessage("Execute");
 			CrimeManager.Instance.SpendTime(requireTime);
 			dangers.ApplyDanger();
+			if (isOnce)
+				Destroy(gameObject);
 		}
 	}
 }

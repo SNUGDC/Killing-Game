@@ -10,7 +10,7 @@ namespace KillingGame.CrimeScene
 		{
 			if (inputMessage == "" || inputMessage == null)
 				return;
-			string[] messages = inputMessage.Split(new [] {'\r', '\n'});
+			string[] messages = inputMessage.Split(new [] {'@'});
 			CrimeManager.Instance.ShowMessage(messages);
 		}
 		public int ReturnIndex()
