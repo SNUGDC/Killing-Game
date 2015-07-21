@@ -198,12 +198,19 @@ public class ObjectNode : Node
 			{
 				if (!selects.ContainsKey(outPut) || !selects[outPut].functions.ContainsKey(inPut))
 					return;
+				DestroyImmediate((MonoBehaviour)selects[outPut].functions[inPut]);			
+				selects[outPut].functions.Remove(inPut);
+				try
+				{
+					inPut.connection.connections.Remove(inPut);
+				}
+				catch (NullReferenceException e)
+				{
+					
+				}
+				Inputs.Remove(inPut);
 				Vector2 topLeft = rect.position;
 				rect = new Rect (topLeft.x, topLeft.y, 200, 100);
-				selects[outPut].functions.Remove(inPut);
-				inPut.connection.connections.Remove(inPut);			
-				DestroyImmediate((MonoBehaviour)selects[outPut].functions[inPut]);
-				Inputs.Remove(inPut);
 				DrawConnectors();
 				return;
 			}
