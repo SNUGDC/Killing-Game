@@ -15,11 +15,35 @@ namespace KillingGame.CrimeScene
 		public GameObject needle;
 		public int dangerCount;
 		public List<GameObject> itemList;
+		GameObject[] selectButtons;
 		
 		void Awake()
 		{
 			currentTime = 0;
 			Instance = this;
+		}
+		
+		void Start()
+		{
+			selectButtons = new GameObject[10];
+			for (int i=0; i<10; i++)
+			{
+				selectButtons[i] = Instantiate(Resources.Load("Prefabs/UI/Select")) as GameObject;
+				selectButtons[i].SetActive(false);
+			}
+		}
+		
+		public GameObject GetButton()
+		{
+			for (int i=0; i<10; i++)
+			{
+				if (!selectButtons[i].activeSelf)
+				{
+					selectButtons[i].SetActive(true);
+					return selectButtons[i];
+				}
+			}	
+			return null;
 		}
 		
 		public void obtainItem(GameObject item)

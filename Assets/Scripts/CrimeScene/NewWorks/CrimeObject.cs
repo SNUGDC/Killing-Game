@@ -109,7 +109,7 @@ namespace KillingGame.CrimeScene
 			int i = 0;
 			foreach (GameObject item in activeList)
 			{
-				selectButtons[i] = Instantiate(Resources.Load("Prefabs/UI/Select")) as GameObject;
+				selectButtons[i] = CrimeManager.Instance.GetButton();
 				selectButtons[i].transform.Find("Label").GetComponent<TextMesh>().text = item.name;
 				selectButtons[i].transform.position = transform.position + 1f * i * Vector3.down + 3 * Vector3.right;
 				selectButtons[i].GetComponent<SelectableButton>().crimeObject = this;
