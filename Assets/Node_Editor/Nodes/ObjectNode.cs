@@ -8,7 +8,7 @@ using System;
 public class ObjectNode : Node 
 {
 	public bool isDraw = false;
-	
+	bool isExpanded = true;
 	public string[] selectOptions = new string[] {"스프라이트 변경", "활성화 상태 변경", "사운드 재생", "메시지 출력", "아이템 획득", "위험도 변경", "이미지 출력"};
 	public int selectOptionIndex = 0;
 	public CrimeObject crimeObject;
@@ -45,7 +45,7 @@ public class ObjectNode : Node
 		return node;
 	}
 
-	public override void DrawNode () 
+	public override void DrawNode() 
 	{
 		GUILayout.BeginHorizontal();
 		
@@ -54,22 +54,39 @@ public class ObjectNode : Node
 		GUILayout.BeginHorizontal();
 		
 		GUILayout.Label("이름");
-		baseObject.name = EditorGUILayout.TextField(baseObject.name);	
+		baseObject.name = EditorGUILayout.TextField(baseObject.name);
 		GUILayout.EndHorizontal();
 		crimeObject.isActive = EditorGUILayout.Toggle("활성화", crimeObject.isActive);
-		crimeObject.useAsRoute = EditorGUILayout.Toggle("조건 노드로 사용하기", crimeObject.useAsRoute);		
-		GUILayout.Label("기본 스프라이트");
-		crimeObject.baseSprite = EditorGUILayout.ObjectField (crimeObject.baseSprite, typeof(Sprite), true) as Sprite;
-		GUILayout.Label("선택 스프라이트");
-		crimeObject.selectedSprite = EditorGUILayout.ObjectField (crimeObject.selectedSprite, typeof(Sprite), true) as Sprite;
-		if(GUILayout.Button("선택지 추가"))
+		crimeObject.useAsRoute = EditorGUILayout.Toggle("조건 노드로 사용하기", crimeObject.useAsRoute);
+		if (!isExpanded)
 		{
-			Selection selection = new Selection(baseObject);
-			NodeOutput key = NodeOutput.Create(this, "선택지 입력", typeof(float));
-			selects.Add(key, selection);
-			DrawNode();
+			if(GUILayout.Button("자세히"))
+			{
+				isExpanded = true;
+				DrawNode();
+			}
 		}
-
+		if (isExpanded)
+		{
+			if(GUILayout.Button("간략히"))
+			{
+				isExpanded = false;
+				Vector2 topLeft = rect.position;
+				rect = new Rect (topLeft.x, topLeft.y, 200, 100);
+				DrawNode();
+			}
+			GUILayout.Label("기본 스프라이트");
+			crimeObject.baseSprite = EditorGUILayout.ObjectField (crimeObject.baseSprite, typeof(Sprite), true) as Sprite;
+			GUILayout.Label("선택 스프라이트");
+			crimeObject.selectedSprite = EditorGUILayout.ObjectField (crimeObject.selectedSprite, typeof(Sprite), true) as Sprite;
+			if(GUILayout.Button("선택지 추가"))
+			{
+				Selection selection = new Selection(baseObject);
+				NodeOutput key = NodeOutput.Create(this, "선택지 입력", typeof(float));
+				selects.Add(key, selection);
+				DrawNode();
+			}
+		}		
 		GUILayout.Space(20);
 		
 		List<NodeOutput> keyList = new List<NodeOutput>(selects.Keys);
@@ -89,69 +106,73 @@ public class ObjectNode : Node
 		if (!selects.ContainsKey(outPut))
 			return;
 		outPut.DisplayLayout();
-		GUILayout.BeginHorizontal();
-		GUILayout.Label("이름");
-		if (selects.ContainsKey(outPut))
-			selects[outPut].selectManager.gameObject.name = EditorGUILayout.TextField(selects[outPut].selectManager.gameObject.name);
-		if(GUILayout.Button("선택지 삭제"))
+		if (isExpanded)
 		{
-			if (!selects.ContainsKey(outPut))
-				return;
-			DestroyImmediate(selects[outPut].selectManager.gameObject);
-			selects.Remove(outPut);
-			Outputs.Remove(outPut);
-			Vector2 topLeft = rect.position;
-			rect = new Rect (topLeft.x, topLeft.y, 200, 100);
-			foreach (NodeInput inPut in outPut.connections)
+			GUILayout.BeginHorizontal();
+			GUILayout.Label("이름");
+			if (selects.ContainsKey(outPut))
+				selects[outPut].selectManager.gameObject.name = EditorGUILayout.TextField(selects[outPut].selectManager.gameObject.name);
+			if(GUILayout.Button("선택지 삭제"))
 			{
-				inPut.connection = null;
-			}
-			Outputs.Remove(outPut);
-			DrawConnectors();
-			return;
-		}
-		GUILayout.EndHorizontal();
-		selects[outPut].selectManager.isActive = EditorGUILayout.Toggle("활성화", selects[outPut].selectManager.isActive);
-		selects[outPut].selectManager.isOnce = EditorGUILayout.Toggle("일회용", selects[outPut].selectManager.isOnce);
-		selects[outPut].selectManager.requireTime = EditorGUILayout.FloatField("소요시간", selects[outPut].selectManager.requireTime);
-		//  selects[outPut].selectManager.dangers.isActive = EditorGUILayout.Toggle("위험 활성화", selects[outPut].selectManager.dangers.isActive);
-		selects[outPut].selectManager.dangers.dangerCount = EditorGUILayout.IntField("위험도", selects[outPut].selectManager.dangers.dangerCount);
-		GUILayout.BeginHorizontal();
-		selectOptionIndex = EditorGUILayout.Popup("종류", selectOptionIndex, selectOptions);
-		if(GUILayout.Button("기능 추가"))
-		{
-			NodeInput key = NodeInput.Create(this, "기능 출력", typeof(float));
-			IExecutable executor = null;
-			if (!selects.ContainsKey(outPut))
+				if (!selects.ContainsKey(outPut))
+					return;
+				DestroyImmediate(selects[outPut].selectManager.gameObject);
+				selects.Remove(outPut);
+				Outputs.Remove(outPut);
+				Vector2 topLeft = rect.position;
+				rect = new Rect (topLeft.x, topLeft.y, 200, 100);
+				foreach (NodeInput inPut in outPut.connections)
+				{
+					inPut.connection = null;
+				}
+				Outputs.Remove(outPut);
+				DrawConnectors();
 				return;
-			switch (selectOptionIndex)
-			{
-				case 0:
-					executor = selects[outPut].selectManager.gameObject.AddComponent<SpriteChanger>();
-				break;
-				case 1:
-					executor = selects[outPut].selectManager.gameObject.AddComponent<Enabler>();
-				break;
-				case 2:
-					executor = selects[outPut].selectManager.gameObject.AddComponent<SoundPlayer>();
-				break;
-				case 3:
-					executor = selects[outPut].selectManager.gameObject.AddComponent<MessageDisplayer>();
-				break;
-				case 4:
-					executor = selects[outPut].selectManager.gameObject.AddComponent<ItemGainer>();
-				break;
-				case 5:
-					executor = selects[outPut].selectManager.gameObject.AddComponent<DangerChanger>();
-				break;
-				case 6:
-					executor = selects[outPut].selectManager.gameObject.AddComponent<SpriteShower>();
-				break;
 			}
-			selects[outPut].functions.Add(key, executor);
-			DrawNode();
+			GUILayout.EndHorizontal();
+			selects[outPut].selectManager.isActive = EditorGUILayout.Toggle("활성화", selects[outPut].selectManager.isActive);
+			selects[outPut].selectManager.isOnce = EditorGUILayout.Toggle("일회용", selects[outPut].selectManager.isOnce);
+			selects[outPut].selectManager.requireTime = EditorGUILayout.FloatField("소요시간", selects[outPut].selectManager.requireTime);
+			//  selects[outPut].selectManager.dangers.isActive = EditorGUILayout.Toggle("위험 활성화", selects[outPut].selectManager.dangers.isActive);
+			selects[outPut].selectManager.dangers.dangerCount = EditorGUILayout.IntField("위험도", selects[outPut].selectManager.dangers.dangerCount);
+			GUILayout.BeginHorizontal();
+			selectOptionIndex = EditorGUILayout.Popup("종류", selectOptionIndex, selectOptions);
+			if(GUILayout.Button("기능 추가"))
+			{
+				NodeInput key = NodeInput.Create(this, "기능 출력", typeof(float));
+				IExecutable executor = null;
+				if (!selects.ContainsKey(outPut))
+					return;
+				switch (selectOptionIndex)
+				{
+					case 0:
+						executor = selects[outPut].selectManager.gameObject.AddComponent<SpriteChanger>();
+					break;
+					case 1:
+						executor = selects[outPut].selectManager.gameObject.AddComponent<Enabler>();
+					break;
+					case 2:
+						executor = selects[outPut].selectManager.gameObject.AddComponent<SoundPlayer>();
+					break;
+					case 3:
+						executor = selects[outPut].selectManager.gameObject.AddComponent<MessageDisplayer>();
+					break;
+					case 4:
+						executor = selects[outPut].selectManager.gameObject.AddComponent<ItemGainer>();
+					break;
+					case 5:
+						executor = selects[outPut].selectManager.gameObject.AddComponent<DangerChanger>();
+					break;
+					case 6:
+						executor = selects[outPut].selectManager.gameObject.AddComponent<SpriteShower>();
+					break;
+				}
+				selects[outPut].functions.Add(key, executor);
+				DrawNode();
+			}
+			GUILayout.EndHorizontal();
 		}
-		GUILayout.EndHorizontal();
+		
 		
 		List<NodeInput> keyList = new List<NodeInput>(selects[outPut].functions.Keys);
 		foreach (var item in keyList)
@@ -160,7 +181,8 @@ public class ObjectNode : Node
 		}
 		
 		DrawConnectors();
-		GUILayout.Space(20);
+		if (isExpanded)
+			GUILayout.Space(20);
 	}
 	
 	private void DrawSelectFunction(NodeOutput outPut, NodeInput inPut)
@@ -168,66 +190,69 @@ public class ObjectNode : Node
 		if (!selects.ContainsKey(outPut) || !selects[outPut].functions.ContainsKey(inPut))
 			return;
 		inPut.DisplayLayout();
-		GUILayout.BeginHorizontal();
-		GUILayout.Label(selectOptions[selects[outPut].functions[inPut].ReturnIndex()]);
-		if(GUILayout.Button("기능 삭제"))
+		if (isExpanded)
 		{
-			if (!selects.ContainsKey(outPut) || !selects[outPut].functions.ContainsKey(inPut))
+			GUILayout.BeginHorizontal();
+			GUILayout.Label(selectOptions[selects[outPut].functions[inPut].ReturnIndex()]);
+			if(GUILayout.Button("기능 삭제"))
+			{
+				if (!selects.ContainsKey(outPut) || !selects[outPut].functions.ContainsKey(inPut))
+					return;
+				Vector2 topLeft = rect.position;
+				rect = new Rect (topLeft.x, topLeft.y, 200, 100);
+				selects[outPut].functions.Remove(inPut);
+				inPut.connection.connections.Remove(inPut);			
+				DestroyImmediate((MonoBehaviour)selects[outPut].functions[inPut]);
+				Inputs.Remove(inPut);
+				DrawConnectors();
 				return;
-			Vector2 topLeft = rect.position;
-			rect = new Rect (topLeft.x, topLeft.y, 200, 100);
-			DestroyImmediate((MonoBehaviour)selects[outPut].functions[inPut]);
-			selects[outPut].functions.Remove(inPut);
-			inPut.connection.connections.Remove(inPut);
-			Inputs.Remove(inPut);
-			DrawConnectors();
-			return;
+			}
+			GUILayout.EndHorizontal();
+			switch (selects[outPut].functions[inPut].ReturnIndex())
+			{
+				case 0:
+					GUILayout.BeginHorizontal();
+					GUILayout.Label("기본 스프라이트");
+					((SpriteChanger)selects[outPut].functions[inPut]).baseSprite = EditorGUILayout.ObjectField (((SpriteChanger)selects[outPut].functions[inPut]).baseSprite, typeof(Sprite), true) as Sprite;
+					GUILayout.Label("선택 스프라이트");
+					((SpriteChanger)selects[outPut].functions[inPut]).selectedSprite = EditorGUILayout.ObjectField (((SpriteChanger)selects[outPut].functions[inPut]).selectedSprite, typeof(Sprite), true) as Sprite;
+					GUILayout.EndHorizontal();
+				break;
+				case 1:
+					((Enabler)selects[outPut].functions[inPut]).option = (EnableOption)EditorGUILayout.EnumPopup("옵션", ((Enabler)selects[outPut].functions[inPut]).option);
+				break;
+				case 2:
+					SoundPlayer player = (SoundPlayer)selects[outPut].functions[inPut];
+					player.sound = EditorGUILayout.ObjectField("효과음", player.sound, typeof(AudioClip), true) as AudioClip;
+				break;
+				case 3: 
+					GUILayout.BeginHorizontal();
+					((MessageDisplayer)selects[outPut].functions[inPut]).inputMessage = EditorGUILayout.TextArea(((MessageDisplayer)selects[outPut].functions[inPut]).inputMessage);
+					GUILayout.EndHorizontal();
+				break;
+				case 4:
+					
+				break;
+				case 5:
+					DangerChanger changer = (DangerChanger)selects[outPut].functions[inPut];
+					changer.newDanger = EditorGUILayout.IntField("새 위험도", changer.newDanger);
+				break;
+				case 6:
+					SpriteShower shower = (SpriteShower)selects[outPut].functions[inPut];
+					for (int i=0; i<shower.sprites.Count; i++)
+					{
+						shower.sprites[i] = EditorGUILayout.ObjectField(shower.sprites[i], typeof(Sprite), true) as Sprite;
+					}
+					Sprite newSprite = null;
+					newSprite = EditorGUILayout.ObjectField(newSprite, typeof(Sprite), true) as Sprite;
+					if(newSprite != null)
+					{
+						shower.sprites.Add(newSprite);
+					}
+				break;
+			}
+			GUILayout.Space(10);
 		}
-		GUILayout.EndHorizontal();
-		switch (selects[outPut].functions[inPut].ReturnIndex())
-		{
-			case 0:
-				GUILayout.BeginHorizontal();
-				GUILayout.Label("기본 스프라이트");
-				((SpriteChanger)selects[outPut].functions[inPut]).baseSprite = EditorGUILayout.ObjectField (((SpriteChanger)selects[outPut].functions[inPut]).baseSprite, typeof(Sprite), true) as Sprite;
-				GUILayout.Label("선택 스프라이트");
-				((SpriteChanger)selects[outPut].functions[inPut]).selectedSprite = EditorGUILayout.ObjectField (((SpriteChanger)selects[outPut].functions[inPut]).selectedSprite, typeof(Sprite), true) as Sprite;
-				GUILayout.EndHorizontal();
-			break;
-			case 1:
-				((Enabler)selects[outPut].functions[inPut]).option = (EnableOption)EditorGUILayout.EnumPopup("옵션", ((Enabler)selects[outPut].functions[inPut]).option);
-			break;
-			case 2:
-				SoundPlayer player = (SoundPlayer)selects[outPut].functions[inPut];
-				player.sound = EditorGUILayout.ObjectField("효과음", player.sound, typeof(AudioClip), true) as AudioClip;
-			break;
-			case 3: 
-				GUILayout.BeginHorizontal();
-				((MessageDisplayer)selects[outPut].functions[inPut]).inputMessage = EditorGUILayout.TextArea(((MessageDisplayer)selects[outPut].functions[inPut]).inputMessage);
-				GUILayout.EndHorizontal();
-			break;
-			case 4:
-				
-			break;
-			case 5:
-				DangerChanger changer = (DangerChanger)selects[outPut].functions[inPut];
-				changer.newDanger = EditorGUILayout.IntField("새 위험도", changer.newDanger);
-			break;
-			case 6:
-				SpriteShower shower = (SpriteShower)selects[outPut].functions[inPut];
-				for (int i=0; i<shower.sprites.Count; i++)
-				{
-					shower.sprites[i] = EditorGUILayout.ObjectField(shower.sprites[i], typeof(Sprite), true) as Sprite;
-				}
-				Sprite newSprite = null;
-				newSprite = EditorGUILayout.ObjectField(newSprite, typeof(Sprite), true) as Sprite;
-				if(newSprite != null)
-				{
-					shower.sprites.Add(newSprite);
-				}
-			break;
-		}
-		GUILayout.Space(10);
 	}
 	
 	public override void Apply()
