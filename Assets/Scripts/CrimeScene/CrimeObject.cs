@@ -17,6 +17,8 @@ namespace KillingGame.CrimeScene
 		{
 			get	
 			{
+				if (_manager == null)
+					_manager = new CrimeObjectManager();
 				return _manager;
 			}
 			set

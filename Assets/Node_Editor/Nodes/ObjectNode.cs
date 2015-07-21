@@ -12,6 +12,7 @@ public class ObjectNode : Node
 	public string[] selectOptions = new string[] {"스프라이트 변경", "활성화 상태 변경", "사운드 재생", "메시지 출력", "아이템 획득", "위험도 변경", "이미지 출력"};
 	public int selectOptionIndex = 0;
 	public Dictionary<NodeOutput, Selection> selects = new Dictionary<NodeOutput, Selection>();
+
 	
 	public class Selection
 	{
@@ -34,7 +35,8 @@ public class ObjectNode : Node
 			node.baseObject.AddComponent<CrimeObject>();
 			node.baseObject.AddComponent<SpriteRenderer>();
 		}
-		node.manager = node.baseObject.GetComponent<CrimeObject>().Manager;
+		node.crimeObject = node.baseObject.GetComponent<CrimeObject>();
+		node.manager = node.crimeObject.Manager;
 		
 		//  node.tempObject.transform.parent = GameObject.Find("TempObjects").transform;
  		//  node.tempObject.AddComponent<CrimeObject>().Manager = new CrimeObjectManager();

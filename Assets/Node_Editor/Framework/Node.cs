@@ -8,7 +8,8 @@ using Object = UnityEngine.Object;
 
 public abstract class Node : ScriptableObject
 {
-	public KillingGame.CrimeScene.CrimeObjectManager manager;
+	public KillingGame.CrimeScene.CrimeObject crimeObject;
+	public KillingGame.CrimeScene.CrimeObjectManager manager;	
 	public Rect rect = new Rect ();
 	public GameObject baseObject;
 	public GameObject tempObject;
