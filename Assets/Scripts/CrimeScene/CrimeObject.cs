@@ -17,7 +17,6 @@ namespace KillingGame.CrimeScene
 		public bool isActive = true;
 		public Sprite baseSprite;
 		public Sprite selectedSprite;
-		Dictionary<string, Selectable> selectables;
 		List<GameObject> selectList = new List<GameObject>();
 		List<GameObject> activeList = new List<GameObject>();
 		
@@ -43,51 +42,7 @@ namespace KillingGame.CrimeScene
 					break;
 			}
 		}
-		
-		void Start()
-		{
-			baseSprite = GetComponent<SpriteRenderer>().sprite;
-			selectables = new Dictionary<string, Selectable>();
-			foreach(Selectable item in GetComponents<Selectable>())
-			{
-				selectables.Add(item.label, item);
-			}
-			foreach(Transform child in transform)
-			{
-				if(child.GetComponent<SelectManager>())
-				{
-					selectList.Add(child.gameObject);
-				}
-			}
-		}
-		
-		public void disableSelectable(string label)
-		{
-			if (label == "Object")
-			{
-				isActive = false;
-				return;
-			}
-			selectables[label].isActive = false;
-		}
-		public void enableSelectable(string label)
-		{
-			if (label == "Object")
-			{
-				isActive = true;
-				return;
-			}
-			selectables[label].isActive = true;
-		}
-		public void eraseSelectable(string label)
-		{
-			if (label == "Object")
-			{
-				Destroy(gameObject);
-				return;
-			}
-			Destroy(selectables[label]);
-		}
+
 		public void onTouchThis()
 		{
 			if (!isActive || CrimeManager.Instance.isGUI)

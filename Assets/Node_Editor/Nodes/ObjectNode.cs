@@ -86,16 +86,29 @@ public class ObjectNode : Node
 	
 	private void DrawSelect(NodeOutput outPut)
 	{
+		if (!selects.ContainsKey(outPut))
+			return;
 		outPut.DisplayLayout();
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("이름");
-		selects[outPut].selectManager.gameObject.name = EditorGUILayout.TextField(selects[outPut].selectManager.gameObject.name);
+		if (selects.ContainsKey(outPut))
+			selects[outPut].selectManager.gameObject.name = EditorGUILayout.TextField(selects[outPut].selectManager.gameObject.name);
 		if(GUILayout.Button("선택지 삭제"))
 		{
+			if (!selects.ContainsKey(outPut))
+				return;
 			DestroyImmediate(selects[outPut].selectManager.gameObject);
 			selects.Remove(outPut);
 			Outputs.Remove(outPut);
-			DrawNode();
+			Vector2 topLeft = rect.position;
+			rect = new Rect (topLeft.x, topLeft.y, 200, 100);
+			foreach (NodeInput inPut in outPut.connections)
+			{
+				inPut.connection = null;
+			}
+			Outputs.Remove(outPut);
+			DrawConnectors();
+			return;
 		}
 		GUILayout.EndHorizontal();
 		selects[outPut].selectManager.isActive = EditorGUILayout.Toggle("활성화", selects[outPut].selectManager.isActive);
@@ -109,6 +122,8 @@ public class ObjectNode : Node
 		{
 			NodeInput key = NodeInput.Create(this, "기능 출력", typeof(float));
 			IExecutable executor = null;
+			if (!selects.ContainsKey(outPut))
+				return;
 			switch (selectOptionIndex)
 			{
 				case 0:
@@ -144,20 +159,29 @@ public class ObjectNode : Node
 			DrawSelectFunction(outPut, item);
 		}
 		
-		
+		DrawConnectors();
 		GUILayout.Space(20);
 	}
 	
 	private void DrawSelectFunction(NodeOutput outPut, NodeInput inPut)
 	{
+		if (!selects.ContainsKey(outPut) || !selects[outPut].functions.ContainsKey(inPut))
+			return;
 		inPut.DisplayLayout();
 		GUILayout.BeginHorizontal();
 		GUILayout.Label(selectOptions[selects[outPut].functions[inPut].ReturnIndex()]);
 		if(GUILayout.Button("기능 삭제"))
 		{
+			if (!selects.ContainsKey(outPut) || !selects[outPut].functions.ContainsKey(inPut))
+				return;
+			Vector2 topLeft = rect.position;
+			rect = new Rect (topLeft.x, topLeft.y, 200, 100);
 			DestroyImmediate((MonoBehaviour)selects[outPut].functions[inPut]);
 			selects[outPut].functions.Remove(inPut);
+			inPut.connection.connections.Remove(inPut);
 			Inputs.Remove(inPut);
+			DrawConnectors();
+			return;
 		}
 		GUILayout.EndHorizontal();
 		switch (selects[outPut].functions[inPut].ReturnIndex())

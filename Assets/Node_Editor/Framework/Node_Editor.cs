@@ -40,7 +40,7 @@ public class Node_Editor : EditorWindow
 		if (!initiated || nodeCanvas == null) 
 		{
 			ConnectorKnob = EditorGUIUtility.Load ("icons/animationkeyframe.png") as Texture2D;
-			Background = AssetDatabase.LoadAssetAtPath (editorPath + "background.png", typeof(Texture2D)) as Texture2D;
+			Background = AssetDatabase.LoadAssetAtPath (editorPath + "background.jpg", typeof(Texture2D)) as Texture2D;
 
 			nodeBase = new GUIStyle (GUI.skin.box);
 			nodeBase.normal.background = ColorToTex (new Color (0.5f, 0.5f, 0.5f));
