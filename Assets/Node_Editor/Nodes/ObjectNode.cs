@@ -89,7 +89,6 @@ public class ObjectNode : Node
 		outPut.DisplayLayout();
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("이름");
-		selects[outPut].selectManager.gameObject.name = "새 선택지";
 		selects[outPut].selectManager.gameObject.name = EditorGUILayout.TextField(selects[outPut].selectManager.gameObject.name);
 		if(GUILayout.Button("선택지 삭제"))
 		{
@@ -119,7 +118,7 @@ public class ObjectNode : Node
 					executor = selects[outPut].selectManager.gameObject.AddComponent<Enabler>();
 				break;
 				case 2:
-					executor = selects[outPut].selectManager.gameObject.AddComponent<Soundplayer>();
+					executor = selects[outPut].selectManager.gameObject.AddComponent<SoundPlayer>();
 				break;
 				case 3:
 					executor = selects[outPut].selectManager.gameObject.AddComponent<MessageDisplayer>();
@@ -175,7 +174,7 @@ public class ObjectNode : Node
 				((Enabler)selects[outPut].functions[inPut]).option = (EnableOption)EditorGUILayout.EnumPopup("옵션", ((Enabler)selects[outPut].functions[inPut]).option);
 			break;
 			case 2:
-				Soundplayer player = (Soundplayer)selects[outPut].functions[inPut];
+				SoundPlayer player = (SoundPlayer)selects[outPut].functions[inPut];
 				player.sound = EditorGUILayout.ObjectField("효과음", player.sound, typeof(AudioClip), true) as AudioClip;
 			break;
 			case 3: 

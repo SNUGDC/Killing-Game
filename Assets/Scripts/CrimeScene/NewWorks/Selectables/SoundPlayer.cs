@@ -3,7 +3,7 @@ using System;
 
 namespace KillingGame.CrimeScene
 {
-	public class Soundplayer : MonoBehaviour, IExecutable
+	public class SoundPlayer : MonoBehaviour, IExecutable
 	{
 		public AudioClip sound;
 		public void Execute()
