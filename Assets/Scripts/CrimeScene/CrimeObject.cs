@@ -55,7 +55,6 @@ namespace KillingGame.CrimeScene
 		{
 			if (!isActive || CrimeManager.Instance.isGUI)
 				return;
-			CrimeManager.Instance.isGUI = true;
 			if (selectedSprite != null)
 				GetComponent<SpriteRenderer>().sprite = selectedSprite;
 			
@@ -75,7 +74,7 @@ namespace KillingGame.CrimeScene
 			}
 			if (activeList.Count == 0)
 				return;
-			
+			CrimeManager.Instance.isGUI = true;
 			selectButtons = new GameObject[activeList.Count + 1];
 			int i = 0;
 			foreach (GameObject item in activeList)
