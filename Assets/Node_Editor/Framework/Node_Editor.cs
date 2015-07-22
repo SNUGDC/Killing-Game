@@ -157,7 +157,7 @@ public class Node_Editor : EditorWindow
 		}
 	}
 	
-	private void ApplyChanges()
+	public void ApplyChanges()
 	{
 		int cnt = nodeCanvas.nodes.Count;
 		for (int i=0; i<cnt; i++)
@@ -425,6 +425,8 @@ public class Node_Editor : EditorWindow
 		for (int i = 0; i < 3; i++) // Draw a shadow with 3 shades
 			Handles.DrawBezier (startPos, endPos, startTan, endTan, shadowColor, null, (i + 1) * 4); // increasing width for fading shadow
 		Handles.DrawBezier(startPos, endPos, startTan, endTan, Color.black, null, 2);
+		
+		editor.ApplyChanges();
 	}
 
 	#endregion

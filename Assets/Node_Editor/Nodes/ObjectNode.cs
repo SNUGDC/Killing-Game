@@ -280,7 +280,7 @@ public class ObjectNode : Node
 				if (key.connection == null)
 					continue;
 				
-				if (key.connection.body.Inputs.Count < 1 || key.connection == key.connection.body.Inputs[0])
+				if (key.connection.body.Inputs.Count < 1 || key.connection == key.connection.body.Outputs[0])
 				{
 					target = key.connection.body.baseObject;
 				}
