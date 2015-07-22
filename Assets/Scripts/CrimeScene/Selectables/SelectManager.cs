@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace KillingGame.CrimeScene
 {
@@ -42,6 +42,7 @@ namespace KillingGame.CrimeScene
 					isActive = false;
 					break;
 				case EnableOption.erase:
+					transform.parent.GetComponent<CrimeObject>().selectList.Remove(gameObject);
 					Destroy(gameObject);
 					break;
 			}
@@ -55,6 +56,7 @@ namespace KillingGame.CrimeScene
 			CrimeManager.Instance.SpendTime(requireTime);
 			dangers.ApplyDanger();
 			if (isOnce)
+				transform.parent.GetComponent<CrimeObject>().selectList.Remove(gameObject);
 				Destroy(gameObject);
 		}
 	}

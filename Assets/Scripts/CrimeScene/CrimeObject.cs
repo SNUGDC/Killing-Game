@@ -17,7 +17,7 @@ namespace KillingGame.CrimeScene
 		public bool isActive = true;
 		public Sprite baseSprite;
 		public Sprite selectedSprite;
-		List<GameObject> selectList = new List<GameObject>();
+		public List<GameObject> selectList = new List<GameObject>();
 		List<GameObject> activeList = new List<GameObject>();
 		
 		GameObject[] selectButtons;
@@ -91,12 +91,15 @@ namespace KillingGame.CrimeScene
 			selectButtons[i].transform.Find("Label").GetComponent<TextMesh>().text = "취소";
 			selectButtons[i].transform.position = transform.position + 1f * i * Vector3.down + 3 * Vector3.right;
 			selectButtons[i].GetComponent<SelectableButton>().crimeObject = this;
+			selectButtons[i].GetComponent<SelectableButton>().selectable = null;
 		}
 		public void onCancelThis()
 		{
 			GetComponent<SpriteRenderer>().sprite = baseSprite;
 			foreach (GameObject button in selectButtons)
 			{
+				button.GetComponent<SelectableButton>().crimeObject = null;
+				button.GetComponent<SelectableButton>().selectable = null;
 				button.SetActive(false);
 			}
 			if (!CrimeManager.Instance.messageHolder.activeSelf || !CrimeManager.Instance.spriteShower.activeSelf)

@@ -12,7 +12,7 @@ public class Node_Editor : EditorWindow
 	public Node_Canvas_Object nodeCanvas;
 	public static Node_Editor editor;
 
-	public const string editorPath = "Assets/Node_Editor/";
+	public const string editorPath = "Assets/Editor/";
 	public string openedCanvas = "New Canvas";
 	public string openedCanvasPath;
 
