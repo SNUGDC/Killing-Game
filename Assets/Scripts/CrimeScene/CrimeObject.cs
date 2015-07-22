@@ -63,6 +63,13 @@ namespace KillingGame.CrimeScene
 			
 			foreach (GameObject item in selectList)
 			{
+				// there is a bug which is happen when item is deleted.
+				// When deleting item, programmer should update selectList.
+				// This code is temporary fix.
+				if (item == null) {
+					continue;
+				}
+
 				if (item.GetComponent<SelectManager>().isActive)
 					activeList.Add(item);
 			}
