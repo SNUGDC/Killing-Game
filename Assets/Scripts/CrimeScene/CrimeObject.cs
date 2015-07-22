@@ -22,6 +22,14 @@ namespace KillingGame.CrimeScene
 		
 		GameObject[] selectButtons;
 		
+		void Start()
+		{
+			foreach (Transform child in transform)
+			{
+				selectList.Add(child.gameObject);
+			}
+		}
+		
 		public void SetEnable(EnableOption option)
 		{
 			switch (option)
@@ -42,7 +50,7 @@ namespace KillingGame.CrimeScene
 					break;
 			}
 		}
-
+		
 		public void onTouchThis()
 		{
 			if (!isActive || CrimeManager.Instance.isGUI)
@@ -60,6 +68,7 @@ namespace KillingGame.CrimeScene
 			}
 			if (activeList.Count == 0)
 				return;
+			
 			selectButtons = new GameObject[activeList.Count + 1];
 			int i = 0;
 			foreach (GameObject item in activeList)
@@ -71,7 +80,7 @@ namespace KillingGame.CrimeScene
 				selectButtons[i].GetComponent<SelectableButton>().selectable = item;
 				i++;
 			}
-			selectButtons[i] = Instantiate(Resources.Load("Prefabs/UI/Select")) as GameObject;
+			selectButtons[i] = CrimeManager.Instance.GetButton();
 			selectButtons[i].transform.Find("Label").GetComponent<TextMesh>().text = "취소";
 			selectButtons[i].transform.position = transform.position + 1f * i * Vector3.down + 3 * Vector3.right;
 			selectButtons[i].GetComponent<SelectableButton>().crimeObject = this;
@@ -81,7 +90,7 @@ namespace KillingGame.CrimeScene
 			GetComponent<SpriteRenderer>().sprite = baseSprite;
 			foreach (GameObject button in selectButtons)
 			{
-				Destroy(button);
+				button.SetActive(false);
 			}
 			if (!CrimeManager.Instance.messageHolder.activeSelf || !CrimeManager.Instance.spriteShower.activeSelf)
 				CrimeManager.Instance.isGUI = false;
