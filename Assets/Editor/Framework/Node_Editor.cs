@@ -438,6 +438,8 @@ public class Node_Editor : EditorWindow
 	/// </summary>
 	public void SaveNodeCanvas (string path) 
 	{
+		nodeCanvas.scenePath = EditorApplication.currentScene;
+		EditorApplication.SaveScene(nodeCanvas.scenePath);
 		if (String.IsNullOrEmpty (path))
 			return;
 		string existingPath = AssetDatabase.GetAssetPath (nodeCanvas);
@@ -496,6 +498,8 @@ public class Node_Editor : EditorWindow
 		string[] folders = path.Split (new char[] {'/'}, StringSplitOptions.None);
 		openedCanvas = folders [folders.Length-1];
 		openedCanvasPath = path;
+		
+		EditorApplication.OpenScene(nodeCanvas.scenePath);
 		
 		Repaint ();
 		AssetDatabase.Refresh ();

@@ -15,7 +15,22 @@ namespace KillingGame.CrimeScene
 	{
 		public bool useAsRoute = false;
 		public bool isActive = true;
-		public Sprite baseSprite;
+		Sprite _baseSprite;
+		public Sprite baseSprite
+		{
+			get
+			{
+				return _baseSprite;
+			}
+			set
+			{
+				_baseSprite = value;
+				Collider2D coll = gameObject.GetComponent<Collider2D>();
+				if (coll != null)
+					Destroy(coll);
+				gameObject.AddComponent<PolygonCollider2D>();
+			}
+		}
 		public Sprite selectedSprite;
 		public List<GameObject> selectList = new List<GameObject>();
 		List<GameObject> activeList = new List<GameObject>();

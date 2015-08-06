@@ -9,7 +9,22 @@ using Object = UnityEngine.Object;
 public abstract class Node : ScriptableObject
 {
 	public Rect rect = new Rect ();
-	public GameObject baseObject;
+	public string targetID;
+	GameObject _object;
+	public GameObject baseObject
+	{
+		get
+		{
+			if (_object == null)
+				_object = GameObject.Find(targetID);
+			return _object;
+		}
+		set
+		{
+			_object = value;
+			targetID = value.name;
+		}
+	}
 	public List<NodeInput> Inputs = new List<NodeInput> ();
 	public List<NodeOutput> Outputs = new List<NodeOutput> ();
 

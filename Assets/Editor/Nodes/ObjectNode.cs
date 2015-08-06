@@ -11,7 +11,20 @@ public class ObjectNode : Node
 	bool isExpanded = true;
 	public string[] selectOptions = new string[] {"스프라이트 변경", "활성화 상태 변경", "사운드 재생", "메시지 출력", "아이템 획득", "위험도 변경", "이미지 출력"};
 	public int selectOptionIndex = 0;
-	public CrimeObject crimeObject;
+	CrimeObject _crime;
+	public CrimeObject crimeObject
+	{
+		get
+		{
+			if (_crime == null)
+				_crime = baseObject.GetComponent<CrimeObject>();
+			return _crime;
+		}
+		set
+		{
+			_crime = value;
+		}
+	}
 	public Dictionary<NodeOutput, Selection> selects = new Dictionary<NodeOutput, Selection>();
 	
 	public class Selection
@@ -33,7 +46,6 @@ public class ObjectNode : Node
 		node.baseObject = new GameObject();
 		node.baseObject.transform.parent = GameObject.Find("CrimeObjects").transform;
  		node.baseObject.name = "새 오브젝트";
-		node.baseObject.AddComponent<BoxCollider2D>();
 		node.baseObject.AddComponent<SpriteRenderer>();
 		node.crimeObject = node.baseObject.AddComponent<CrimeObject>();
 		node.name = "오브젝트";
@@ -102,12 +114,13 @@ public class ObjectNode : Node
 			crimeObject.GetComponent<SpriteRenderer>().sprite = crimeObject.baseSprite;
 			Apply();			
 		}	
-			
+		if (GUI.changed)
+			targetID = baseObject.name;
 	}
 	
 	private void DrawSelect(NodeOutput outPut)
 	{
-		if (!selects.ContainsKey(outPut))
+		if (outPut == null || !selects.ContainsKey(outPut))
 			return;
 		outPut.DisplayLayout();
 		if (isExpanded)
