@@ -7,6 +7,7 @@ public class NodeInput : ScriptableObject
 	public Rect rect = new Rect ();
 	public NodeOutput connection;
 	public string type;
+	public string nodeID;
 
 	/// <summary>
 	/// Creates a new NodeInput in NodeBody of specified type

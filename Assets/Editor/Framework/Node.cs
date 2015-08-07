@@ -10,13 +10,16 @@ public abstract class Node : ScriptableObject
 {
 	public Rect rect = new Rect ();
 	public string targetID;
-	GameObject _object;
+	public GameObject _object;
 	public GameObject baseObject
 	{
 		get
 		{
 			if (_object == null)
+			{
 				_object = GameObject.Find(targetID);
+				Reallocate(this);
+			}	
 			return _object;
 		}
 		set
@@ -24,6 +27,10 @@ public abstract class Node : ScriptableObject
 			_object = value;
 			targetID = value.name;
 		}
+	}
+	static void Reallocate(Node node)
+	{
+		
 	}
 	public List<NodeInput> Inputs = new List<NodeInput> ();
 	public List<NodeOutput> Outputs = new List<NodeOutput> ();

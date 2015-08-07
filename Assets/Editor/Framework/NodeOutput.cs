@@ -8,6 +8,7 @@ public class NodeOutput : ScriptableObject
 	public Rect rect = new Rect ();
 	public List<NodeInput> connections = new List<NodeInput> ();
 	public string type;
+	public string nodeID;
 	[NonSerialized]
 	public object value = null;
 

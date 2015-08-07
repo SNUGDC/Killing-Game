@@ -13,9 +13,10 @@ namespace KillingGame.CrimeScene
 	}
 	public class CrimeObject : MonoBehaviour, IEnable 
 	{
+		public bool isEditor = true;
 		public bool useAsRoute = false;
 		public bool isActive = true;
-		Sprite _baseSprite;
+		public Sprite _baseSprite;
 		public Sprite baseSprite
 		{
 			get
@@ -25,6 +26,8 @@ namespace KillingGame.CrimeScene
 			set
 			{
 				_baseSprite = value;
+				if (isEditor)
+					return;
 				Collider2D coll = gameObject.GetComponent<Collider2D>();
 				if (coll != null)
 					Destroy(coll);
@@ -39,6 +42,7 @@ namespace KillingGame.CrimeScene
 		
 		void Start()
 		{
+			isEditor = false;
 			foreach (Transform child in transform)
 			{
 				selectList.Add(child.gameObject);

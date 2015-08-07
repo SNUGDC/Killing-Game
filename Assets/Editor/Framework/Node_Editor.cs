@@ -500,6 +500,7 @@ public class Node_Editor : EditorWindow
 		openedCanvasPath = path;
 		
 		EditorApplication.OpenScene(nodeCanvas.scenePath);
+		Debug.Log(nodeCanvas.scenePath);
 		
 		Repaint ();
 		AssetDatabase.Refresh ();
