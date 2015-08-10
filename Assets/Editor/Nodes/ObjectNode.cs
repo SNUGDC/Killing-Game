@@ -29,7 +29,7 @@ public class ObjectNode : Node
 		{
 			item.Value.OnSave();
 			selectList[cnt] = ScriptableObject.CreateInstance<OutputSelectionPair>();
-			selectList[cnt].output = item.Key;
+			selectList[cnt].output = Outputs.IndexOf(item.Key);
 			selectList[cnt].selection = item.Value;
 			cnt++;
 		}
@@ -44,7 +44,7 @@ public class ObjectNode : Node
 		selects = new Dictionary<NodeOutput, Selection>();
 		foreach (OutputSelectionPair item in selectList)
 		{
-			selects.Add(item.output, item.selection);
+			selects.Add(Outputs[item.output], item.selection);
 			item.selection.OnLoad();
 		}
 	}

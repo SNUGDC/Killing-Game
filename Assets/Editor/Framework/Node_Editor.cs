@@ -451,6 +451,7 @@ public class Node_Editor : EditorWindow
 			}
 			return;
 		}
+		AssetDatabase.DeleteAsset(path);
 		AssetDatabase.CreateAsset (nodeCanvas, path);
 		for (int nodeCnt = 0; nodeCnt < nodeCanvas.nodes.Count; nodeCnt++) 
 		{ // Add every node and every of it's inputs/outputs into the file. 
