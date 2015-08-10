@@ -20,6 +20,7 @@ public class ObjectNode : Node
 	public void OnSave()
 	{
 		Apply();
+		crimeObject.Apply();
 		objectPath = GetObjectPath(baseObject);
 		
 		selectList = new OutputSelectionPair[selects.Count];
@@ -109,7 +110,6 @@ public class ObjectNode : Node
 				GameObject managerHolder = new GameObject();
 				managerHolder.transform.parent = baseObject.transform;
 				managerHolder.name = "새 선택지";
-				Debug.Log(selection == null);
 				selection.selectManager = managerHolder.AddComponent<SelectManager>();
 				NodeOutput key = NodeOutput.Create(this, "선택지 입력", typeof(float));
 				selects.Add(key, selection);

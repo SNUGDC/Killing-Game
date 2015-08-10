@@ -29,11 +29,6 @@ namespace KillingGame.CrimeScene
 				if (isEditor)
 				{
 					_baseSprite = value;
-					GetComponent<SpriteRenderer>().sprite = _baseSprite;
-					Collider2D coll = gameObject.GetComponent<Collider2D>();
-					if (coll != null)
-						DestroyImmediate(coll);
-					gameObject.AddComponent<PolygonCollider2D>();
 				}
 				else
 				{
@@ -46,6 +41,16 @@ namespace KillingGame.CrimeScene
 		List<GameObject> activeList = new List<GameObject>();
 		
 		GameObject[] selectButtons;
+		
+		public void Apply()
+		{
+			Collider2D coll = gameObject.GetComponent<Collider2D>();
+			if (coll != null)
+				DestroyImmediate(coll);
+			GetComponent<SpriteRenderer>().sprite = baseSprite;
+			gameObject.AddComponent<PolygonCollider2D>();
+			transform.localPosition = Vector3.zero;
+		}
 		
 		void Start()
 		{
