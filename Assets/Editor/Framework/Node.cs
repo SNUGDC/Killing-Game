@@ -1,40 +1,69 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-
 using Object = UnityEngine.Object;
 
+[System.Serializable]
 public abstract class Node : ScriptableObject
 {
 	public Rect rect = new Rect ();
-	public string targetID;
-	public GameObject _object;
-	public GameObject baseObject
-	{
-		get
-		{
-			if (_object == null)
-			{
-				_object = GameObject.Find(targetID);
-				Reallocate(this);
-			}	
-			return _object;
-		}
-		set
-		{
-			_object = value;
-			targetID = value.name;
-		}
-	}
-	static void Reallocate(Node node)
-	{
-		
-	}
+	public string objectPath;
+	[System.NonSerialized]
+	public GameObject baseObject;
+	
 	public List<NodeInput> Inputs = new List<NodeInput> ();
 	public List<NodeOutput> Outputs = new List<NodeOutput> ();
 
+	public static string GetObjectPath(GameObject target)
+	{
+		string path = "/" + target.name;
+		Transform topTrans = target.transform;
+		
+		while (topTrans.parent != null)
+		{
+			topTrans = topTrans.parent;
+			path = "/" + topTrans.gameObject.name + path;
+		}
+		
+		return path;
+	}
+	public static GameObject GetObject(string path)
+	{
+		GameObject target = null;
+		target = GameObject.Find(path);
+		
+		return target;
+	}
+	
+	
+	public static PathOrder GetComponentPath<T>(T component) where T : MonoBehaviour
+	{
+		string path = GetObjectPath(component.gameObject);
+		int order = 0;
+		List<T> components = new List<T>(component.gameObject.GetComponents<T>());
+		
+		for (int cnt=0; cnt<components.Count; cnt++)
+		{
+			if (component == components[cnt])
+			{
+				order = cnt;
+				break;
+			}
+		}
+		
+		PathOrder pathOrder = ScriptableObject.CreateInstance<PathOrder>();
+		pathOrder.path = path;
+		pathOrder.order = order;
+		return pathOrder;
+	}
+	public static T GetComponentFromPath<T>(PathOrder pathOrder) where T : MonoBehaviour
+	{
+		GameObject targetHolder = GetObject(pathOrder.path);
+		List<T> components = new List<T>(targetHolder.GetComponents<T>());
+		return components[pathOrder.order];
+	}
+	
 	/// <summary>
 	/// Init this node. Has to be called when creating a child node of this
 	/// </summary>
@@ -53,7 +82,7 @@ public abstract class Node : ScriptableObject
 			AssetDatabase.Refresh ();
 		}
 	}
-
+	
 	/// <summary>
 	/// Function implemented by the children to draw the node
 	/// </summary>

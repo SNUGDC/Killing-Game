@@ -11,7 +11,11 @@ public class Node_Editor : EditorWindow
 {
 	public Node_Canvas_Object nodeCanvas;
 	public static Node_Editor editor;
-
+	
+	public delegate void SaveLoadEvent();
+	public SaveLoadEvent OnSave;
+	public SaveLoadEvent OnLoad;
+	
 	public const string editorPath = "Assets/Editor/";
 	public string openedCanvas = "New Canvas";
 	public string openedCanvasPath;
@@ -438,6 +442,7 @@ public class Node_Editor : EditorWindow
 	/// </summary>
 	public void SaveNodeCanvas (string path) 
 	{
+		OnSave();
 		nodeCanvas.scenePath = EditorApplication.currentScene;
 		EditorApplication.SaveScene(nodeCanvas.scenePath);
 		if (String.IsNullOrEmpty (path))
@@ -462,6 +467,26 @@ public class Node_Editor : EditorWindow
 				AssetDatabase.AddObjectToAsset (node.Inputs [inCnt], node);
 			for (int outCnt = 0; outCnt < node.Outputs.Count; outCnt++) 
 				AssetDatabase.AddObjectToAsset (node.Outputs [outCnt], node);
+			if (node.GetType() == typeof(ObjectNode))
+			{
+				ObjectNode objNode = (ObjectNode)node;
+				Debug.Log("Object node");
+				for (int selCnt=0; selCnt<objNode.selectList.Length; selCnt++)
+				{
+					OutputSelectionPair outputSelect = objNode.selectList[selCnt];
+					AssetDatabase.AddObjectToAsset(outputSelect, node);
+					//  AssetDatabase.AddObjectToAsset(outputSelect.output, outputSelect);
+					Selection selection = outputSelect.selection;
+					AssetDatabase.AddObjectToAsset(selection, outputSelect);
+					for (int funCnt=0; funCnt<selection.functionList.Length; funCnt++)
+					{
+						InputPathPair inputPath = selection.functionList[funCnt];
+						AssetDatabase.AddObjectToAsset(inputPath, selection);
+						//  AssetDatabase.AddObjectToAsset(inputPath.input, inputPath);
+						AssetDatabase.AddObjectToAsset(inputPath.path, inputPath);
+					}
+				}
+			}
 		}
 
 		string[] folders = path.Split (new char[] {'/'}, StringSplitOptions.None);
@@ -470,6 +495,7 @@ public class Node_Editor : EditorWindow
 
 		AssetDatabase.SaveAssets ();
 		AssetDatabase.Refresh ();
+		
 		Repaint ();
 	}
 
@@ -494,13 +520,13 @@ public class Node_Editor : EditorWindow
 		if (newNodeCanvas == null)
 			return;
 		nodeCanvas = newNodeCanvas;
+		//  OnLoad();
 
 		string[] folders = path.Split (new char[] {'/'}, StringSplitOptions.None);
 		openedCanvas = folders [folders.Length-1];
 		openedCanvasPath = path;
 		
 		EditorApplication.OpenScene(nodeCanvas.scenePath);
-		Debug.Log(nodeCanvas.scenePath);
 		
 		Repaint ();
 		AssetDatabase.Refresh ();

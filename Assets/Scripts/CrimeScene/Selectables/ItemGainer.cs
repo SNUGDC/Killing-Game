@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace KillingGame.CrimeScene
 {
-	public class ItemGainer : MonoBehaviour, IExecutable
+	public class ItemGainer : Function
 	{
 		public GameObject target;
 		

@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace KillingGame.CrimeScene
 {
-	public class Enabler : MonoBehaviour, IExecutable
+	public class Enabler : Function
 	{
 		public EnableOption option;
 		public GameObject target;

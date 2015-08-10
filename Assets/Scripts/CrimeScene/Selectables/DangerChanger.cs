@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace KillingGame.CrimeScene
 {
-	public class DangerChanger : MonoBehaviour, IExecutable
+	public class DangerChanger : Function
 	{
 		public GameObject target;
 		public int newDanger;

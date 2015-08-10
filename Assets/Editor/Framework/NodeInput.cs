@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System;
 
+[System.Serializable]
 public class NodeInput : ScriptableObject
 {
 	public Node body;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace KillingGame.CrimeScene
 {
-	public class SpriteShower : MonoBehaviour, IExecutable
+	public class SpriteShower : Function
 	{
 		public List<Sprite> sprites = new List<Sprite>();
 		public void Execute()

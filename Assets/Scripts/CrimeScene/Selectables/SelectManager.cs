@@ -3,11 +3,14 @@ using System.Collections.Generic;
 
 namespace KillingGame.CrimeScene
 {
-	public interface IExecutable
+	public abstract class Function : MonoBehaviour
 	{
-		void Execute();
-		int ReturnIndex();
-		void SetTarget(GameObject target);
+		public void Execute()
+		{}
+		public int ReturnIndex()
+		{return 0;}
+		public void SetTarget(GameObject target)
+		{}
 	}
 	
 	public class SelectManager : MonoBehaviour, IEnable

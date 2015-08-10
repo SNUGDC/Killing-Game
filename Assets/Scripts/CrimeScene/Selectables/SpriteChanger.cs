@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace KillingGame.CrimeScene
 {
-	public class SpriteChanger : MonoBehaviour, IExecutable
+	public class SpriteChanger : Function
 	{
 		public GameObject target;
 		public Sprite baseSprite;

@@ -7,107 +7,47 @@ using System;
 [System.Serializable]
 public class ObjectNode : Node 
 {
-	public bool isDraw = false;
-	bool isExpanded = true;
+	public bool isExpanded = true;
 	public string[] selectOptions = new string[] {"스프라이트 변경", "활성화 상태 변경", "사운드 재생", "메시지 출력", "아이템 획득", "위험도 변경", "이미지 출력"};
 	public int selectOptionIndex = 0;
-	CrimeObject _crime;
-	public GameObject baseObject
+	public CrimeObject crimeObject;
+	
+	[System.NonSerialized]
+	public Dictionary<NodeOutput, Selection> selects;
+	
+	public OutputSelectionPair[] selectList;
+	
+	public void OnSave()
 	{
-		get
+		objectPath = GetObjectPath(baseObject);
+		
+		selectList = new OutputSelectionPair[selects.Count];
+		int cnt = 0;
+		foreach (var item in selects)
 		{
-			if (_object == null)
-			{
-				_object = GameObject.Find(targetID);
-				Reallocate(this);
-			}	
-			return _object;
-		}
-		set
-		{
-			_object = value;
-			targetID = value.name;
+			item.Value.OnSave();
+			selectList[cnt] = ScriptableObject.CreateInstance<OutputSelectionPair>();
+			selectList[cnt].output = item.Key;
+			selectList[cnt].selection = item.Value;
+			cnt++;
 		}
 	}
-	public CrimeObject crimeObject
-	{
-		get
-		{
-			if (_crime == null)
-				_crime = baseObject.GetComponent<CrimeObject>();
-			return _crime;
-		}
-		set
-		{
-			_crime = value;
-		}
-	}
-	public SerializableDictionary<NodeOutput, Selection> selects;
-	
-	public class Selection
-	{
-		ObjectNode node;
-		//  SelectManager _selectManager;
-		//  public SelectManager selectManager
-		//  {
-		//  	get
-		//  	{
-		//  		if (_selectManager == null)
-		//  			Reallocate(node);
-		//  		return _selectManager;
-		//  	}
-		//  	set
-		//  	{
-		//  		_selectManager = value;
-		//  	}
-		//  }
-		public SelectManager selectManager;
+	public void OnLoad()
+	{	
+		baseObject = GameObject.Find(objectPath);
+		crimeObject = baseObject.GetComponent<CrimeObject>();
 		
-		public SerializableDictionary<NodeInput, IExecutable> functions = new SerializableDictionary<NodeInput, IExecutable>();
-		
-		public Selection(GameObject baseObject, ObjectNode node)
+		selects = new Dictionary<NodeOutput, Selection>();
+		foreach (OutputSelectionPair item in selectList)
 		{
-			this.node = node;
-			GameObject selectionHolder = new GameObject();
-			selectionHolder.name = "Selections";
-			selectManager = selectionHolder.AddComponent<SelectManager>();
-			selectionHolder.transform.parent = baseObject.transform;
+			selects.Add(item.output, item.selection);
+			item.selection.OnLoad();
 		}
-		public Selection(SelectManager selectManager, ObjectNode node)
-		{
-			this.node = node;
-			this.selectManager = selectManager;
-		}
-	}
-	
-	public SerializableDictionary<int, int> testDic;
-	
-	public static void Reallocate(Node baseNode)
-	{
-		ObjectNode node = (ObjectNode)baseNode;
-		Debug.Log(node.testDic.MyDictionary.Count);
-		//  List<Selection> selectsValues = new List<Selection>(node.selects.Values);
-		
-		//  Debug.Log(node.selects.Count);
-		
-		//  for (int i=0; i<selectsValues.Count; i++)
-		//  {
-		//  	Selection selection = selectsValues[i];
-		//  	selection.selectManager = node.baseObject.transform.GetChild(i).GetComponent<SelectManager>();
-		//  	Debug.Log(selection.selectManager.gameObject.name);
-		//  	IExecutable[] comps;
-		//  	comps = node.baseObject.transform.GetChild(i).GetComponents<IExecutable>();
-		//  	List<NodeInput> functionsKeys = new List<NodeInput>(selection.functions.Keys);
-		//  	for (int j=0; j<functionsKeys.Count; j++)
-		//  	{
-		//  		selection.functions[functionsKeys[j]] = comps[j];
-		//  	}
-		//  }
 	}
 	
 	public static ObjectNode Create (Rect NodeRect) 
 	{ // This function has to be registered in Node_Editor.ContextCallback
-		ObjectNode node = ScriptableObject.CreateInstance <ObjectNode> ();
+		ObjectNode node = ScriptableObject.CreateInstance<ObjectNode>();
 		node.baseObject = new GameObject();
 		node.baseObject.transform.parent = GameObject.Find("CrimeObjects").transform;
  		node.baseObject.name = "새 오브젝트";
@@ -115,15 +55,19 @@ public class ObjectNode : Node
 		node.crimeObject = node.baseObject.AddComponent<CrimeObject>();
 		node.name = "오브젝트";
 		node.rect = NodeRect;
-		node.selects = new SerializableDictionary<NodeOutput, Selection>();
+		node.selects = new Dictionary<NodeOutput, Selection>();
 		NodeOutput.Create (node, "오브젝트 입력", typeof (float));
 
 		node.Init ();
+		Node_Editor.editor.OnSave += node.OnSave;
+		Node_Editor.editor.OnLoad += node.OnLoad;
 		return node;
 	}
 
 	public override void DrawNode() 
 	{
+		if (baseObject == null)
+			OnLoad();
 		GUILayout.BeginHorizontal();
 		
 		GUILayout.BeginVertical();
@@ -147,10 +91,6 @@ public class ObjectNode : Node
 		{
 			if(GUILayout.Button("간략히"))
 			{
-				testDic = new SerializableDictionary<int, int>();
-				testDic.MyDictionary.Add(1,1);
-				testDic.MyDictionary.Add(2,2);
-				
 				isExpanded = false;
 				Vector2 topLeft = rect.position;
 				rect = new Rect (topLeft.x, topLeft.y, 200, 100);
@@ -162,16 +102,21 @@ public class ObjectNode : Node
 			crimeObject.selectedSprite = EditorGUILayout.ObjectField (crimeObject.selectedSprite, typeof(Sprite), true) as Sprite;
 			if(GUILayout.Button("선택지 추가"))
 			{
-				Selection selection = new Selection(baseObject, this);
+				Selection selection = ScriptableObject.CreateInstance<Selection>();
+				GameObject managerHolder = new GameObject();
+				managerHolder.transform.parent = baseObject.transform;
+				managerHolder.name = "새 선택지";
+				Debug.Log(selection == null);
+				selection.selectManager = managerHolder.AddComponent<SelectManager>();
 				NodeOutput key = NodeOutput.Create(this, "선택지 입력", typeof(float));
-				selects.MyDictionary.Add(key, selection);
+				selects.Add(key, selection);
 				DrawNode();
 			}
 		}		
 		GUILayout.Space(20);
 		
-		//  List<NodeOutput> keyList = new List<NodeOutput>(selects.MyDictionary.Keys);
-		List<NodeOutput> keyList = new List<NodeOutput>();
+		List<NodeOutput> keyList = new List<NodeOutput>(selects.Keys);
+
 		foreach (var item in keyList)
 		{
 			DrawSelect(item);
@@ -182,29 +127,29 @@ public class ObjectNode : Node
 		if(GUI.changed)
 		{
 			crimeObject.GetComponent<SpriteRenderer>().sprite = crimeObject.baseSprite;
-			Apply();			
-		}	
-		if (GUI.changed)
-			targetID = baseObject.name;
+			Apply();
+		}
 	}
 	
 	private void DrawSelect(NodeOutput outPut)
 	{
-		if (outPut == null || !selects.MyDictionary.ContainsKey(outPut))
+		if (outPut == null || !selects.ContainsKey(outPut))
 			return;
 		outPut.DisplayLayout();
+		SelectManager selectManager = selects[outPut].selectManager;
+		var functions = selects[outPut].functions;
 		if (isExpanded)
 		{
 			GUILayout.BeginHorizontal();
 			GUILayout.Label("이름");
-			if (selects.MyDictionary.ContainsKey(outPut))
-				selects.MyDictionary[outPut].selectManager.gameObject.name = EditorGUILayout.TextField(selects.MyDictionary[outPut].selectManager.gameObject.name);
+			if (selects.ContainsKey(outPut))
+				selects[outPut].selectManager.gameObject.name = EditorGUILayout.TextField(selects[outPut].selectManager.gameObject.name);
 			if(GUILayout.Button("선택지 삭제"))
 			{
-				if (!selects.MyDictionary.ContainsKey(outPut))
+				if (!selects.ContainsKey(outPut))
 					return;
-				DestroyImmediate(selects.MyDictionary[outPut].selectManager.gameObject);
-				selects.MyDictionary.Remove(outPut);
+				DestroyImmediate(selects[outPut].selectManager.gameObject);
+				selects.Remove(outPut);
 				Outputs.Remove(outPut);
 				Vector2 topLeft = rect.position;
 				rect = new Rect (topLeft.x, topLeft.y, 200, 100);
@@ -217,51 +162,51 @@ public class ObjectNode : Node
 				return;
 			}
 			GUILayout.EndHorizontal();
-			selects.MyDictionary[outPut].selectManager.isActive = EditorGUILayout.Toggle("활성화", selects.MyDictionary[outPut].selectManager.isActive);
-			selects.MyDictionary[outPut].selectManager.isOnce = EditorGUILayout.Toggle("일회용", selects.MyDictionary[outPut].selectManager.isOnce);
-			selects.MyDictionary[outPut].selectManager.requireTime = EditorGUILayout.FloatField("소요시간", selects.MyDictionary[outPut].selectManager.requireTime);
+			selectManager.isActive = EditorGUILayout.Toggle("활성화", selectManager.isActive);
+			selectManager.isOnce = EditorGUILayout.Toggle("일회용", selects[outPut].selectManager.isOnce);
+			selectManager.requireTime = EditorGUILayout.FloatField("소요시간", selectManager.requireTime);
 			//  selects[outPut].selectManager.dangers.isActive = EditorGUILayout.Toggle("위험 활성화", selects[outPut].selectManager.dangers.isActive);
-			selects.MyDictionary[outPut].selectManager.dangers.dangerCount = EditorGUILayout.IntField("위험도", selects.MyDictionary[outPut].selectManager.dangers.dangerCount);
+			selectManager.dangers.dangerCount = EditorGUILayout.IntField("위험도", selectManager.dangers.dangerCount);
 			GUILayout.BeginHorizontal();
 			selectOptionIndex = EditorGUILayout.Popup("종류", selectOptionIndex, selectOptions);
 			if(GUILayout.Button("기능 추가"))
 			{
 				NodeInput key = NodeInput.Create(this, "기능 출력", typeof(float));
-				IExecutable executor = null;
-				if (!selects.MyDictionary.ContainsKey(outPut))
+				Function executor = null;
+				if (!selects.ContainsKey(outPut))
 					return;
 				switch (selectOptionIndex)
 				{
 					case 0:
-						executor = selects.MyDictionary[outPut].selectManager.gameObject.AddComponent<SpriteChanger>();
+						executor = selectManager.gameObject.AddComponent<SpriteChanger>();
 					break;
 					case 1:
-						executor = selects.MyDictionary[outPut].selectManager.gameObject.AddComponent<Enabler>();
+						executor = selectManager.gameObject.AddComponent<Enabler>();
 					break;
 					case 2:
-						executor = selects.MyDictionary[outPut].selectManager.gameObject.AddComponent<SoundPlayer>();
+						executor = selectManager.gameObject.AddComponent<SoundPlayer>();
 					break;
 					case 3:
-						executor = selects.MyDictionary[outPut].selectManager.gameObject.AddComponent<MessageDisplayer>();
+						executor = selectManager.gameObject.AddComponent<MessageDisplayer>();
 					break;
 					case 4:
-						executor = selects.MyDictionary[outPut].selectManager.gameObject.AddComponent<ItemGainer>();
+						executor = selectManager.gameObject.AddComponent<ItemGainer>();
 					break;
 					case 5:
-						executor = selects.MyDictionary[outPut].selectManager.gameObject.AddComponent<DangerChanger>();
+						executor = selectManager.gameObject.AddComponent<DangerChanger>();
 					break;
 					case 6:
-						executor = selects.MyDictionary[outPut].selectManager.gameObject.AddComponent<SpriteShower>();
+						executor = selectManager.gameObject.AddComponent<SpriteShower>();
 					break;
 				}
-				selects.MyDictionary[outPut].functions.MyDictionary.Add(key, executor);
+				functions.Add(key, executor);
 				DrawNode();
 			}
 			GUILayout.EndHorizontal();
 		}
 		
 		
-		List<NodeInput> keyList = new List<NodeInput>(selects.MyDictionary[outPut].functions.MyDictionary.Keys);
+		List<NodeInput> keyList = new List<NodeInput>(functions.Keys);
 		foreach (var item in keyList)
 		{
 			DrawSelectFunction(outPut, item);
@@ -274,19 +219,21 @@ public class ObjectNode : Node
 	
 	private void DrawSelectFunction(NodeOutput outPut, NodeInput inPut)
 	{
-		if (!selects.MyDictionary.ContainsKey(outPut) || !selects.MyDictionary[outPut].functions.MyDictionary.ContainsKey(inPut))
+		var functions = selects[outPut].functions;
+		var target = functions[inPut];
+		if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
 			return;
 		inPut.DisplayLayout();
 		if (isExpanded)
 		{
 			GUILayout.BeginHorizontal();
-			GUILayout.Label(selectOptions[selects.MyDictionary[outPut].functions.MyDictionary[inPut].ReturnIndex()]);
+			GUILayout.Label(selectOptions[functions[inPut].ReturnIndex()]);
 			if(GUILayout.Button("기능 삭제"))
 			{
-				if (!selects.MyDictionary.ContainsKey(outPut) || !selects.MyDictionary[outPut].functions.MyDictionary.ContainsKey(inPut))
+				if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
 					return;
-				DestroyImmediate((MonoBehaviour)selects.MyDictionary[outPut].functions.MyDictionary[inPut]);			
-				selects.MyDictionary[outPut].functions.MyDictionary.Remove(inPut);
+				DestroyImmediate((MonoBehaviour)functions[inPut]);			
+				functions.Remove(inPut);
 				try
 				{
 					inPut.connection.connections.Remove(inPut);
@@ -302,37 +249,41 @@ public class ObjectNode : Node
 				return;
 			}
 			GUILayout.EndHorizontal();
-			switch (selects.MyDictionary[outPut].functions.MyDictionary[inPut].ReturnIndex())
+			
+			switch (functions[inPut].ReturnIndex())
 			{
 				case 0:
+					SpriteChanger changer = (SpriteChanger)target;
 					GUILayout.BeginHorizontal();
 					GUILayout.Label("기본 스프라이트");
-					((SpriteChanger)selects.MyDictionary[outPut].functions.MyDictionary[inPut]).baseSprite = EditorGUILayout.ObjectField (((SpriteChanger)selects.MyDictionary[outPut].functions.MyDictionary[inPut]).baseSprite, typeof(Sprite), true) as Sprite;
+					changer.baseSprite = EditorGUILayout.ObjectField (changer.baseSprite, typeof(Sprite), true) as Sprite;
 					GUILayout.Label("선택 스프라이트");
-					((SpriteChanger)selects.MyDictionary[outPut].functions.MyDictionary[inPut]).selectedSprite = EditorGUILayout.ObjectField (((SpriteChanger)selects.MyDictionary[outPut].functions.MyDictionary[inPut]).selectedSprite, typeof(Sprite), true) as Sprite;
+					changer.selectedSprite = EditorGUILayout.ObjectField (changer.selectedSprite, typeof(Sprite), true) as Sprite;
 					GUILayout.EndHorizontal();
 				break;
 				case 1:
-					((Enabler)selects.MyDictionary[outPut].functions.MyDictionary[inPut]).option = (EnableOption)EditorGUILayout.EnumPopup("옵션", ((Enabler)selects.MyDictionary[outPut].functions.MyDictionary[inPut]).option);
+					Enabler enabler = (Enabler)target;
+					enabler.option = (EnableOption)EditorGUILayout.EnumPopup("옵션", enabler.option);
 				break;
 				case 2:
-					SoundPlayer player = (SoundPlayer)selects.MyDictionary[outPut].functions.MyDictionary[inPut];
+					SoundPlayer player = (SoundPlayer)target;
 					player.sound = EditorGUILayout.ObjectField("효과음", player.sound, typeof(AudioClip), true) as AudioClip;
 				break;
 				case 3: 
 					GUILayout.BeginHorizontal();
-					((MessageDisplayer)selects.MyDictionary[outPut].functions.MyDictionary[inPut]).inputMessage = EditorGUILayout.TextArea(((MessageDisplayer)selects.MyDictionary[outPut].functions.MyDictionary[inPut]).inputMessage);
+					MessageDisplayer displayer = (MessageDisplayer)target;
+					displayer.inputMessage = EditorGUILayout.TextArea(displayer.inputMessage);
 					GUILayout.EndHorizontal();
 				break;
 				case 4:
 					
 				break;
 				case 5:
-					DangerChanger changer = (DangerChanger)selects.MyDictionary[outPut].functions.MyDictionary[inPut];
-					changer.newDanger = EditorGUILayout.IntField("새 위험도", changer.newDanger);
+					DangerChanger dChanger = (DangerChanger)target;
+					dChanger.newDanger = EditorGUILayout.IntField("새 위험도", dChanger.newDanger);
 				break;
 				case 6:
-					SpriteShower shower = (SpriteShower)selects.MyDictionary[outPut].functions.MyDictionary[inPut];
+					SpriteShower shower = (SpriteShower)target;
 					for (int i=0; i<shower.sprites.Count; i++)
 					{
 						shower.sprites[i] = EditorGUILayout.ObjectField(shower.sprites[i], typeof(Sprite), true) as Sprite;
@@ -351,11 +302,12 @@ public class ObjectNode : Node
 	
 	public override void Apply()
 	{
-		List<NodeOutput> keyList = new List<NodeOutput>(selects.MyDictionary.Keys);
+		OnSave();
+		List<NodeOutput> keyList = new List<NodeOutput>(selects.Keys);
 		List<NodeInput> inputList;
 		foreach (var item in keyList)
 		{
-			inputList = new List<NodeInput> (selects.MyDictionary[item].functions.MyDictionary.Keys);
+			inputList = new List<NodeInput> (selects[item].functions.Keys);
 			foreach (var key in inputList)
 			{
 				GameObject target = null;
@@ -369,10 +321,10 @@ public class ObjectNode : Node
 				}
 				else
 				{
-					if (((ObjectNode)key.connection.body).selects.MyDictionary.ContainsKey(key.connection))
-						target = ((ObjectNode)key.connection.body).selects.MyDictionary[key.connection].selectManager.gameObject;
+					if (((ObjectNode)key.connection.body).selects.ContainsKey(key.connection))
+						target = ((ObjectNode)key.connection.body).selects[key.connection].selectManager.gameObject;
 				}
-				selects.MyDictionary[item].functions.MyDictionary[key].SetTarget(target);
+				selects[item].functions[key].SetTarget(target);
 			}
 		}
 	}

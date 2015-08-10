@@ -3,7 +3,7 @@ using System;
 
 namespace KillingGame.CrimeScene
 {
-	public class MessageDisplayer : MonoBehaviour, IExecutable
+	public class MessageDisplayer : Function
 	{
 		public string inputMessage;
 		public void Execute()
