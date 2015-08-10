@@ -86,7 +86,6 @@ public class Node_Editor : EditorWindow
 		checkInit ();
 		
 		InputEvents ();
-		
 		// draw the nodes
 		BeginWindows ();
 		for (int nodeCnt = 0; nodeCnt < nodeCanvas.nodes.Count; nodeCnt++) 
@@ -139,10 +138,6 @@ public class Node_Editor : EditorWindow
 		}
 		knobSize = EditorGUILayout.IntSlider (new GUIContent ("Handle Size", "The size of the handles of the Node Inputs/Outputs"), knobSize, 8, 32);
 	}
-
-	#endregion
-
-	#region Calculation
 
 	List<Node> workList;
 

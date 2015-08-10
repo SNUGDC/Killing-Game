@@ -68,8 +68,10 @@ namespace KillingGame.CrimeScene
 			CrimeManager.Instance.SpendTime(requireTime);
 			dangers.ApplyDanger();
 			if (isOnce)
+			{
 				transform.parent.GetComponent<CrimeObject>().selectList.Remove(gameObject);
 				Destroy(gameObject);
+			}
 		}
 	}
 }
