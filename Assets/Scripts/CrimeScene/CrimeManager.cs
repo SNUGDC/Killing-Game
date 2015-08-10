@@ -16,20 +16,25 @@ namespace KillingGame.CrimeScene
 		public int dangerCount;
 		public List<GameObject> itemList;
 		GameObject[] selectButtons;
+		GameObject[] tempSpritors;
 		
 		void Awake()
 		{
 			currentTime = 0;
 			Instance = this;
-		}
-		
-		void Start()
-		{
+			
 			selectButtons = new GameObject[10];
 			for (int i=0; i<10; i++)
 			{
 				selectButtons[i] = Instantiate(Resources.Load("Prefabs/UI/Select")) as GameObject;
 				selectButtons[i].SetActive(false);
+			}
+			
+			tempSpritors = new GameObject[10];
+			for (int i=0; i<10; i++)
+			{
+				tempSpritors[i] = Instantiate(Resources.Load("Prefabs/Effects/TempSpritor")) as GameObject;
+				tempSpritors[i].SetActive(false);
 			}
 		}
 		
@@ -43,6 +48,19 @@ namespace KillingGame.CrimeScene
 					return selectButtons[i];
 				}
 			}	
+			return null;
+		}
+		
+		public GameObject GetTempSpritor()
+		{
+			for (int i=0; i<10; i++)
+			{
+				if (!tempSpritors[i].activeSelf)
+				{
+					tempSpritors[i].SetActive(true);
+					return tempSpritors[i];
+				}
+			}
 			return null;
 		}
 		

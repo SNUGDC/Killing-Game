@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace KillingGame.CrimeScene
@@ -24,22 +25,19 @@ namespace KillingGame.CrimeScene
 				return _baseSprite;
 			}
 			set
-			{
-				_baseSprite = value;
+			{	
 				if (isEditor)
 				{
+					_baseSprite = value;
+					GetComponent<SpriteRenderer>().sprite = _baseSprite;
 					Collider2D coll = gameObject.GetComponent<Collider2D>();
 					if (coll != null)
 						DestroyImmediate(coll);
 					gameObject.AddComponent<PolygonCollider2D>();
-
 				}
 				else
 				{
-					Collider2D coll = gameObject.GetComponent<Collider2D>();
-					if (coll != null)
-						Destroy(coll);
-					gameObject.AddComponent<PolygonCollider2D>();					
+					StartCoroutine(ChangeSprite(value));
 				}
 			}
 		}
@@ -122,7 +120,7 @@ namespace KillingGame.CrimeScene
 		}
 		public void onCancelThis()
 		{
-			GetComponent<SpriteRenderer>().sprite = baseSprite;
+			GetComponent<SpriteRenderer>().sprite = _baseSprite;
 			foreach (GameObject button in selectButtons)
 			{
 				button.GetComponent<SelectableButton>().crimeObject = null;
@@ -136,6 +134,36 @@ namespace KillingGame.CrimeScene
 		void OnMouseDown()
 		{
 			onTouchThis();
+		}
+		
+		IEnumerator ChangeSprite(Sprite newSprite)
+		{
+			Collider2D coll = gameObject.GetComponent<Collider2D>();
+			if (coll != null)
+				Destroy(coll);
+			
+			GameObject tempSpritor = CrimeManager.Instance.GetTempSpritor();
+			SpriteRenderer thisRenderer = GetComponent<SpriteRenderer>();
+			SpriteRenderer tempRenderer = tempSpritor.GetComponent<SpriteRenderer>();
+			tempRenderer.sprite = _baseSprite;
+
+			float timer = 0;
+			
+			while (timer <= 1)
+			{
+				thisRenderer.sprite = newSprite;
+				thisRenderer.color = new Color(1, 1, 1, timer);
+				tempRenderer.color = new Color(1, 1, 1, 1 - timer);
+				timer += Time.deltaTime;
+				yield return null;
+			}
+			
+			_baseSprite = newSprite;
+			thisRenderer.color = new Color(1, 1, 1, 1);
+			tempSpritor.SetActive(false);
+			
+			gameObject.AddComponent<PolygonCollider2D>();
+			yield break;
 		}
 	}
 }
