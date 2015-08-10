@@ -7,15 +7,11 @@ namespace KillingGame.CrimeScene
 	{
 		public int newDanger;
 		
-		public void Run()
+		public override void Run()
 		{
 			SelectManager selector = target.GetComponent<SelectManager>();
 			if (selector != null)
 				selector.dangers.dangerCount = newDanger;
-		}
-		public int ReturnIndex()
-		{
-			return 5;
 		}
 	}
 }

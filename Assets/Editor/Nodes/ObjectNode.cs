@@ -35,6 +35,8 @@ public class ObjectNode : Node
 	}
 	public void OnLoad()
 	{	
+		Node_Editor.editor.OnSave += OnSave;
+		Node_Editor.editor.OnLoad += OnLoad;
 		baseObject = GameObject.Find(objectPath);
 		crimeObject = baseObject.GetComponent<CrimeObject>();
 		
@@ -222,75 +224,230 @@ public class ObjectNode : Node
 		inPut.DisplayLayout();
 		if (isExpanded)
 		{
-			GUILayout.BeginHorizontal();
-			GUILayout.Label(selectOptions[functions[inPut].ReturnIndex()]);
-			if(GUILayout.Button("기능 삭제"))
+			if (target is SpriteChanger)
 			{
-				if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
+				GUILayout.BeginHorizontal();
+				GUILayout.Label(selectOptions[0]);
+				if(GUILayout.Button("기능 삭제"))
+				{
+					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
+						return;
+					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					functions.Remove(inPut);
+					try
+					{
+						inPut.connection.connections.Remove(inPut);
+					}
+					catch (NullReferenceException e)
+					{
+						
+					}
+					Inputs.Remove(inPut);
+					Vector2 topLeft = rect.position;
+					rect = new Rect (topLeft.x, topLeft.y, 200, 100);
+					DrawConnectors();
 					return;
-				DestroyImmediate((MonoBehaviour)functions[inPut]);			
-				functions.Remove(inPut);
-				try
-				{
-					inPut.connection.connections.Remove(inPut);
 				}
-				catch (NullReferenceException e)
-				{
-					
-				}
-				Inputs.Remove(inPut);
-				Vector2 topLeft = rect.position;
-				rect = new Rect (topLeft.x, topLeft.y, 200, 100);
-				DrawConnectors();
-				return;
+				GUILayout.EndHorizontal();
+				target.delay = EditorGUILayout.FloatField("발동 딜레이(초)", target.delay);
+				
+				SpriteChanger changer = (SpriteChanger)target;
+				GUILayout.BeginHorizontal();
+				GUILayout.Label("기본 스프라이트");
+				changer.baseSprite = EditorGUILayout.ObjectField (changer.baseSprite, typeof(Sprite), true) as Sprite;
+				GUILayout.Label("선택 스프라이트");
+				changer.selectedSprite = EditorGUILayout.ObjectField (changer.selectedSprite, typeof(Sprite), true) as Sprite;
+				GUILayout.EndHorizontal();
 			}
-			GUILayout.EndHorizontal();
-			target.delay = EditorGUILayout.FloatField("발동 딜레이(초)", target.delay);
-			switch (target.ReturnIndex())
+			else if (target is Enabler)
 			{
-				case 0:
-					SpriteChanger changer = (SpriteChanger)target;
-					GUILayout.BeginHorizontal();
-					GUILayout.Label("기본 스프라이트");
-					changer.baseSprite = EditorGUILayout.ObjectField (changer.baseSprite, typeof(Sprite), true) as Sprite;
-					GUILayout.Label("선택 스프라이트");
-					changer.selectedSprite = EditorGUILayout.ObjectField (changer.selectedSprite, typeof(Sprite), true) as Sprite;
-					GUILayout.EndHorizontal();
-				break;
-				case 1:
-					Enabler enabler = (Enabler)target;
-					enabler.option = (EnableOption)EditorGUILayout.EnumPopup("옵션", enabler.option);
-				break;
-				case 2:
-					SoundPlayer player = (SoundPlayer)target;
-					player.sound = EditorGUILayout.ObjectField("효과음", player.sound, typeof(AudioClip), true) as AudioClip;
-				break;
-				case 3: 
-					GUILayout.BeginHorizontal();
-					MessageDisplayer displayer = (MessageDisplayer)target;
-					displayer.inputMessage = EditorGUILayout.TextArea(displayer.inputMessage);
-					GUILayout.EndHorizontal();
-				break;
-				case 4:
-					
-				break;
-				case 5:
-					DangerChanger dChanger = (DangerChanger)target;
-					dChanger.newDanger = EditorGUILayout.IntField("새 위험도", dChanger.newDanger);
-				break;
-				case 6:
-					SpriteShower shower = (SpriteShower)target;
-					for (int i=0; i<shower.sprites.Count; i++)
+				GUILayout.BeginHorizontal();
+				GUILayout.Label(selectOptions[1]);
+				if(GUILayout.Button("기능 삭제"))
+				{
+					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
+						return;
+					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					functions.Remove(inPut);
+					try
 					{
-						shower.sprites[i] = EditorGUILayout.ObjectField(shower.sprites[i], typeof(Sprite), true) as Sprite;
+						inPut.connection.connections.Remove(inPut);
 					}
-					Sprite newSprite = null;
-					newSprite = EditorGUILayout.ObjectField(newSprite, typeof(Sprite), true) as Sprite;
-					if(newSprite != null)
+					catch (NullReferenceException e)
 					{
-						shower.sprites.Add(newSprite);
+						
 					}
-				break;
+					Inputs.Remove(inPut);
+					Vector2 topLeft = rect.position;
+					rect = new Rect (topLeft.x, topLeft.y, 200, 100);
+					DrawConnectors();
+					return;
+				}
+				GUILayout.EndHorizontal();
+				target.delay = EditorGUILayout.FloatField("발동 딜레이(초)", target.delay);
+				
+				Enabler enabler = (Enabler)target;
+				enabler.option = (EnableOption)EditorGUILayout.EnumPopup("옵션", enabler.option);
+			}
+			else if (target is SoundPlayer)
+			{
+				GUILayout.BeginHorizontal();
+				GUILayout.Label(selectOptions[2]);
+				if(GUILayout.Button("기능 삭제"))
+				{
+					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
+						return;
+					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					functions.Remove(inPut);
+					try
+					{
+						inPut.connection.connections.Remove(inPut);
+					}
+					catch (NullReferenceException e)
+					{
+						
+					}
+					Inputs.Remove(inPut);
+					Vector2 topLeft = rect.position;
+					rect = new Rect (topLeft.x, topLeft.y, 200, 100);
+					DrawConnectors();
+					return;
+				}
+				GUILayout.EndHorizontal();
+				target.delay = EditorGUILayout.FloatField("발동 딜레이(초)", target.delay);
+				
+				SoundPlayer player = (SoundPlayer)target;
+				player.sound = EditorGUILayout.ObjectField("효과음", player.sound, typeof(AudioClip), true) as AudioClip;
+			}
+			else if (target is MessageDisplayer)
+			{
+				GUILayout.BeginHorizontal();
+				GUILayout.Label(selectOptions[3]);
+				if(GUILayout.Button("기능 삭제"))
+				{
+					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
+						return;
+					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					functions.Remove(inPut);
+					try
+					{
+						inPut.connection.connections.Remove(inPut);
+					}
+					catch (NullReferenceException e)
+					{
+						
+					}
+					Inputs.Remove(inPut);
+					Vector2 topLeft = rect.position;
+					rect = new Rect (topLeft.x, topLeft.y, 200, 100);
+					DrawConnectors();
+					return;
+				}
+				GUILayout.EndHorizontal();
+				target.delay = EditorGUILayout.FloatField("발동 딜레이(초)", target.delay);
+				
+				GUILayout.BeginHorizontal();
+				MessageDisplayer displayer = (MessageDisplayer)target;
+				displayer.inputMessage = EditorGUILayout.TextArea(displayer.inputMessage);
+				GUILayout.EndHorizontal();
+			}
+			else if (target is ItemGainer)
+			{
+				GUILayout.BeginHorizontal();
+				GUILayout.Label(selectOptions[4]);
+				if(GUILayout.Button("기능 삭제"))
+				{
+					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
+						return;
+					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					functions.Remove(inPut);
+					try
+					{
+						inPut.connection.connections.Remove(inPut);
+					}
+					catch (NullReferenceException e)
+					{
+						
+					}
+					Inputs.Remove(inPut);
+					Vector2 topLeft = rect.position;
+					rect = new Rect (topLeft.x, topLeft.y, 200, 100);
+					DrawConnectors();
+					return;
+				}
+				GUILayout.EndHorizontal();
+				target.delay = EditorGUILayout.FloatField("발동 딜레이(초)", target.delay);
+				
+				
+			}
+			else if (target is DangerChanger)
+			{
+				GUILayout.BeginHorizontal();
+				GUILayout.Label(selectOptions[5]);
+				if(GUILayout.Button("기능 삭제"))
+				{
+					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
+						return;
+					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					functions.Remove(inPut);
+					try
+					{
+						inPut.connection.connections.Remove(inPut);
+					}
+					catch (NullReferenceException e)
+					{
+						
+					}
+					Inputs.Remove(inPut);
+					Vector2 topLeft = rect.position;
+					rect = new Rect (topLeft.x, topLeft.y, 200, 100);
+					DrawConnectors();
+					return;
+				}
+				GUILayout.EndHorizontal();
+				target.delay = EditorGUILayout.FloatField("발동 딜레이(초)", target.delay);
+				
+				DangerChanger dChanger = (DangerChanger)target;
+				dChanger.newDanger = EditorGUILayout.IntField("새 위험도", dChanger.newDanger);
+			}
+			else if (target is SpriteShower)
+			{
+				GUILayout.BeginHorizontal();
+				GUILayout.Label(selectOptions[6]);
+				if(GUILayout.Button("기능 삭제"))
+				{
+					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
+						return;
+					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					functions.Remove(inPut);
+					try
+					{
+						inPut.connection.connections.Remove(inPut);
+					}
+					catch (NullReferenceException e)
+					{
+						
+					}
+					Inputs.Remove(inPut);
+					Vector2 topLeft = rect.position;
+					rect = new Rect (topLeft.x, topLeft.y, 200, 100);
+					DrawConnectors();
+					return;
+				}
+				GUILayout.EndHorizontal();
+				target.delay = EditorGUILayout.FloatField("발동 딜레이(초)", target.delay);
+				
+				SpriteShower shower = (SpriteShower)target;
+				for (int i=0; i<shower.sprites.Count; i++)
+				{
+					shower.sprites[i] = EditorGUILayout.ObjectField(shower.sprites[i], typeof(Sprite), true) as Sprite;
+				}
+				Sprite newSprite = null;
+				newSprite = EditorGUILayout.ObjectField(newSprite, typeof(Sprite), true) as Sprite;
+				if(newSprite != null)
+				{
+					shower.sprites.Add(newSprite);
+				}
 			}
 			GUILayout.Space(10);
 		}

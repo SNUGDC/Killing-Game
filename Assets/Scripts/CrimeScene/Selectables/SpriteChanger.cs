@@ -8,7 +8,7 @@ namespace KillingGame.CrimeScene
 		public Sprite baseSprite;
 		public Sprite selectedSprite;
 		
-		public void Run()
+		public override void Run()
 		{
 			if (!target)
 				return;
@@ -22,10 +22,6 @@ namespace KillingGame.CrimeScene
 			}
 			if (selectedSprite != null)
 				crimeObject.selectedSprite = selectedSprite;
-		}
-		public int ReturnIndex()
-		{
-			return 0;
 		}
 	}
 }

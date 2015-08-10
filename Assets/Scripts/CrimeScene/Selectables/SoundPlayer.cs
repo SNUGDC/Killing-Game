@@ -6,15 +6,11 @@ namespace KillingGame.CrimeScene
 	public class SoundPlayer : Function
 	{
 		public AudioClip sound;
-		public void Run()
+		public override void Run()
 		{
 			if (sound == null)
 				return;
 			CrimeManager.Instance.PlaySound(sound);
-		}
-		public int ReturnIndex()
-		{
-			return 2;
 		}
 	}
 }

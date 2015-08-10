@@ -11,14 +11,11 @@ namespace KillingGame.CrimeScene
 		{
 			Invoke("Run", delay);
 		}
-		public void Run()
+		public virtual void Run()
 		{
 			
 		}
-		public int ReturnIndex()
-		{
-			return 0;
-		}
+
 		public void SetTarget(GameObject target)
 		{
 			this.target = target;

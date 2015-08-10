@@ -440,6 +440,7 @@ public class Node_Editor : EditorWindow
 	/// </summary>
 	public void SaveNodeCanvas (string path) 
 	{
+		ApplyChanges();
 		OnSave();
 		nodeCanvas.scenePath = EditorApplication.currentScene;
 		EditorApplication.SaveScene(nodeCanvas.scenePath);
@@ -528,6 +529,7 @@ public class Node_Editor : EditorWindow
 		
 		Repaint ();
 		AssetDatabase.Refresh ();
+		DrawSideWindow();
 	}
 
 	/// <summary>
