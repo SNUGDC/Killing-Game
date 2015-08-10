@@ -19,6 +19,7 @@ public class ObjectNode : Node
 	
 	public void OnSave()
 	{
+		Apply();
 		objectPath = GetObjectPath(baseObject);
 		
 		selectList = new OutputSelectionPair[selects.Count];
@@ -124,11 +125,6 @@ public class ObjectNode : Node
 		GUILayout.EndVertical();
 		
 		GUILayout.EndHorizontal();
-		if(GUI.changed)
-		{
-			crimeObject.GetComponent<SpriteRenderer>().sprite = crimeObject.baseSprite;
-			Apply();
-		}
 	}
 	
 	private void DrawSelect(NodeOutput outPut)
@@ -302,7 +298,6 @@ public class ObjectNode : Node
 	
 	public override void Apply()
 	{
-		OnSave();
 		List<NodeOutput> keyList = new List<NodeOutput>(selects.Keys);
 		List<NodeInput> inputList;
 		foreach (var item in keyList)

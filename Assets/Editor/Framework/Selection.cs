@@ -27,7 +27,6 @@ public class Selection : ScriptableObject
 			functionList[cnt].path = path;
 			cnt ++;
 		}
-		Debug.Log(functionList.Length);
 	}
 	public void OnLoad()
 	{
