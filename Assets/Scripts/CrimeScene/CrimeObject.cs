@@ -27,11 +27,20 @@ namespace KillingGame.CrimeScene
 			{
 				_baseSprite = value;
 				if (isEditor)
-					return;
-				Collider2D coll = gameObject.GetComponent<Collider2D>();
-				if (coll != null)
-					Destroy(coll);
-				gameObject.AddComponent<PolygonCollider2D>();
+				{
+					Collider2D coll = gameObject.GetComponent<Collider2D>();
+					if (coll != null)
+						DestroyImmediate(coll);
+					gameObject.AddComponent<PolygonCollider2D>();
+
+				}
+				else
+				{
+					Collider2D coll = gameObject.GetComponent<Collider2D>();
+					if (coll != null)
+						Destroy(coll);
+					gameObject.AddComponent<PolygonCollider2D>();					
+				}
 			}
 		}
 		public Sprite selectedSprite;
