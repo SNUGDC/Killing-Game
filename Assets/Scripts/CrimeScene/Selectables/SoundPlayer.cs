@@ -6,7 +6,7 @@ namespace KillingGame.CrimeScene
 	public class SoundPlayer : Function
 	{
 		public AudioClip sound;
-		public void Execute()
+		public void Run()
 		{
 			if (sound == null)
 				return;
@@ -15,10 +15,6 @@ namespace KillingGame.CrimeScene
 		public int ReturnIndex()
 		{
 			return 2;
-		}
-		public void SetTarget(GameObject target)
-		{
-			
 		}
 	}
 }

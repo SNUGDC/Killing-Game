@@ -5,12 +5,24 @@ namespace KillingGame.CrimeScene
 {
 	public abstract class Function : MonoBehaviour
 	{
+		public GameObject target;
+		public float delay;
 		public void Execute()
-		{}
+		{
+			Invoke("Run", delay);
+		}
+		public void Run()
+		{
+			
+		}
 		public int ReturnIndex()
-		{return 0;}
+		{
+			return 0;
+		}
 		public void SetTarget(GameObject target)
-		{}
+		{
+			this.target = target;
+		}
 	}
 	
 	public class SelectManager : MonoBehaviour, IEnable

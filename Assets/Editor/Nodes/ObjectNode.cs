@@ -245,8 +245,8 @@ public class ObjectNode : Node
 				return;
 			}
 			GUILayout.EndHorizontal();
-			
-			switch (functions[inPut].ReturnIndex())
+			target.delay = EditorGUILayout.FloatField("발동 딜레이(초)", target.delay);
+			switch (target.ReturnIndex())
 			{
 				case 0:
 					SpriteChanger changer = (SpriteChanger)target;

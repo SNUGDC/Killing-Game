@@ -6,7 +6,7 @@ namespace KillingGame.CrimeScene
 	public class MessageDisplayer : Function
 	{
 		public string inputMessage;
-		public void Execute()
+		public void Run()
 		{
 			if (inputMessage == "" || inputMessage == null)
 				return;
@@ -16,10 +16,6 @@ namespace KillingGame.CrimeScene
 		public int ReturnIndex()
 		{
 			return 3;
-		}
-		public void SetTarget(GameObject target)
-		{
-			
 		}
 	}
 }

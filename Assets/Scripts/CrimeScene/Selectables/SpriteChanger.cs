@@ -5,11 +5,10 @@ namespace KillingGame.CrimeScene
 {
 	public class SpriteChanger : Function
 	{
-		public GameObject target;
 		public Sprite baseSprite;
 		public Sprite selectedSprite;
 		
-		public void Execute()
+		public void Run()
 		{
 			if (!target)
 				return;
@@ -27,10 +26,6 @@ namespace KillingGame.CrimeScene
 		public int ReturnIndex()
 		{
 			return 0;
-		}
-		public void SetTarget(GameObject target)
-		{
-			this.target = target;
 		}
 	}
 }

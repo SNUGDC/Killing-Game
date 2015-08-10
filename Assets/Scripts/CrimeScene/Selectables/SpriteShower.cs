@@ -6,7 +6,7 @@ namespace KillingGame.CrimeScene
 	public class SpriteShower : Function
 	{
 		public List<Sprite> sprites = new List<Sprite>();
-		public void Execute()
+		public void Run()
 		{
 			CrimeManager.Instance.ShowSprite(sprites);
 		}
@@ -14,11 +14,6 @@ namespace KillingGame.CrimeScene
 		public int ReturnIndex()
 		{
 			return 6;
-		}
-		
-		public void SetTarget(GameObject target)
-		{
-			
 		}
 	}
 }

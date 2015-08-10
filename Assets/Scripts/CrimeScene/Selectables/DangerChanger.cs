@@ -5,10 +5,9 @@ namespace KillingGame.CrimeScene
 {
 	public class DangerChanger : Function
 	{
-		public GameObject target;
 		public int newDanger;
 		
-		public void Execute()
+		public void Run()
 		{
 			SelectManager selector = target.GetComponent<SelectManager>();
 			if (selector != null)
@@ -17,11 +16,6 @@ namespace KillingGame.CrimeScene
 		public int ReturnIndex()
 		{
 			return 5;
-		}
-		
-		public void SetTarget(GameObject target)
-		{
-			this.target = target;
 		}
 	}
 }

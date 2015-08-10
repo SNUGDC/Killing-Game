@@ -4,11 +4,8 @@ using System.Collections;
 namespace KillingGame.CrimeScene
 {
 	public class ItemGainer : Function
-	{
-		public GameObject target;
-		
-		
-		public void Execute()
+	{		
+		public void Run()
 		{
 			if (target == null)
 				return;
@@ -18,11 +15,6 @@ namespace KillingGame.CrimeScene
 		public int ReturnIndex()
 		{
 			return 4;
-		}
-
-		public void SetTarget(GameObject target)
-		{
-			this.target = target;
-		}		
+		}	
 	}
 }
