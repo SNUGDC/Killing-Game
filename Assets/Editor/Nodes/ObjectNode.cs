@@ -510,6 +510,8 @@ public class ObjectNode : Node
 	
 	public override void OnDelete () 
 	{
+		Node_Editor.editor.OnSave -= OnSave;
+		Node_Editor.editor.OnLoad -= OnLoad;
 		DestroyImmediate(baseObject);
 		base.OnDelete ();
 		// Always call this if we want our custom OnDelete operations!

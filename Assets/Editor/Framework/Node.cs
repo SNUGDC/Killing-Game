@@ -147,12 +147,13 @@ public abstract class Node : ScriptableObject
 				Inputs [inCnt].connection.connections.Remove (Inputs [inCnt]);
 		}
 
-		DestroyImmediate (this, true);
 		if (!String.IsNullOrEmpty (Node_Editor.editor.openedCanvasPath)) 
 		{
 			AssetDatabase.ImportAsset (Node_Editor.editor.openedCanvasPath);
 			AssetDatabase.Refresh ();
 		}
+		DestroyImmediate (this, true);
+		Debug.Log(Node_Editor.editor.nodeCanvas.nodes.Count);
 	}
 
 	#region Member Functions
