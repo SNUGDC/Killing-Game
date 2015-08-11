@@ -61,6 +61,7 @@ public class ObjectNode : Node
 		if (nodeType == NodeType.Object)
 		{
 			node.crimeObject.isItem = false;
+			node.baseObject.transform.localPosition = Vector3.zero;
 			node.baseObject.transform.parent = GameObject.Find("CrimeObjects").transform;	
 			node.baseObject.name = "새 오브젝트";
 			node.baseObject.AddComponent<SpriteRenderer>();
