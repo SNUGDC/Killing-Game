@@ -7,16 +7,20 @@ namespace KillingGame.CrimeScene
 	{
 		public static CrimeManager Instance;
 		public bool isGUI = false;
+		List<GameObject> items = new List<GameObject>();
+		public ItemButton[] itemHolders;
 		public GameObject messageHolder;
 		public GameObject spriteShower;
 		public GameObject soundPlayer;
+		
 		public float maxTime = 15;
 		float currentTime;
 		public GameObject needle;
 		public int dangerCount;
-		public List<GameObject> itemList;
+		List<CrimeObject> itemList = new List<CrimeObject>();
 		GameObject[] selectButtons;
 		GameObject[] tempSpritors;
+		public GameObject canceler;
 		
 		void Awake()
 		{
@@ -51,6 +55,12 @@ namespace KillingGame.CrimeScene
 			return null;
 		}
 		
+		public GameObject GetCanceler()
+		{
+			canceler.SetActive(true);
+			return canceler;
+		}
+		
 		public GameObject GetTempSpritor()
 		{
 			for (int i=0; i<10; i++)
@@ -64,17 +74,30 @@ namespace KillingGame.CrimeScene
 			return null;
 		}
 		
-		public void obtainItem(GameObject item)
+		public void ObtainItem(GameObject item)
 		{
-			
+			CrimeObject itemScript = item.GetComponent<CrimeObject>();
+			if (itemScript == null)
+				return;
+			if (itemList.Contains(itemScript))
+				return;
+			itemScript.isActive = true;
+			itemList.Add(itemScript);
+			DisplayItem();
 		}
 		
-		public void showMessage(string[] texts)
+		public void DisplayItem()
 		{
-			isGUI = true;
-			messageHolder.SetActive(true);
-			messageHolder.GetComponent<MessageShow>().getMessages(texts);
+			int holderCnt = 0;
+			for (int cnt=0; cnt<itemList.Count; cnt++)
+			{
+				if (itemList[cnt] == null || !itemList[cnt].isActive || itemList[cnt].isDestroyed)
+					continue;
+				itemHolders[holderCnt].SetTarget(itemList[cnt]);
+				holderCnt++;
+			}
 		}
+
 		public void ShowMessage(string[] texts)
 		{
 			isGUI = true;
@@ -89,21 +112,12 @@ namespace KillingGame.CrimeScene
 			spriteShower.GetComponent<SpriteShow>().GetSprites(sprites);
 		}
 		
-		public void spendTime(float timeSpent)
-		{
-			currentTime += timeSpent;
-			if (currentTime > maxTime)
-				Application.LoadLevel("GameOver");
-			showTime();
-			Debug.Log(currentTime);
-		}
-		
 		public void SpendTime(float timeSpent)
 		{
 			currentTime += timeSpent;
 			if (currentTime > maxTime)
 				Application.LoadLevel("GameOver");
-			showTime();
+			ShowTime();
 			Debug.Log(currentTime);
 		}
 		
@@ -112,7 +126,7 @@ namespace KillingGame.CrimeScene
 			soundPlayer.GetComponent<AudioSource>().PlayOneShot(sound);
 		}
 		
-		void showTime()
+		void ShowTime()
 		{
 			needle.transform.eulerAngles = new Vector3(0,0,-360 * currentTime/maxTime);
 		}

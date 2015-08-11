@@ -90,9 +90,14 @@ public class Node_Editor : EditorWindow
 		BeginWindows ();
 		for (int nodeCnt = 0; nodeCnt < nodeCanvas.nodes.Count; nodeCnt++) 
 		{
+			Node targetNode = nodeCanvas.nodes[nodeCnt];
 			//DrawNode (nodeCanvas.nodes [nodeCnt]);
-			if (nodeCanvas.nodes [nodeCnt] != null)
-				nodeCanvas.nodes [nodeCnt].rect = GUILayout.Window (nodeCnt, nodeCanvas.nodes [nodeCnt].rect, DrawNode, nodeCanvas.nodes [nodeCnt].name);
+			if (targetNode == null)
+				continue;
+			//  GUIStyle windowStyle = new GUIStyle();
+			//  if (targetNode.nodeType == NodeType.Item)
+			//  	windowStyle.normal.background = Background;
+			targetNode.rect = GUILayout.Window (nodeCnt, targetNode.rect, DrawNode, targetNode.name);//, windowStyle);
 		}
 		EndWindows ();
 
@@ -257,6 +262,7 @@ public class Node_Editor : EditorWindow
 				{ // Right click -> Editor Context Click
 					GenericMenu menu = new GenericMenu ();					
 					menu.AddItem(new GUIContent("오브젝트 추가"), false, ContextCallback, "objectNode");
+					menu.AddItem(new GUIContent("아이템 추가"), false, ContextCallback, "itemNode");
 					menu.AddSeparator("");
 					
 					menu.ShowAsContext ();
@@ -332,7 +338,9 @@ public class Node_Editor : EditorWindow
 		case "objectNode":
 			ObjectNode objectNode = ObjectNode.Create (new Rect (mousePos.x, mousePos.y, 200, 100));
 			break;
-	
+		case "itemNode":
+			ObjectNode itemNode = ObjectNode.Create (new Rect (mousePos.x, mousePos.y, 200, 100), NodeType.Item);
+			break;
 		case "deleteNode":
 			Node node = NodeAtPosition (mousePos);
 			if (node != null) 

@@ -49,19 +49,36 @@ public class ObjectNode : Node
 		}
 	}
 	
-	public static ObjectNode Create(Rect NodeRect) 
+	public static ObjectNode Create(Rect NodeRect, NodeType nodeType = NodeType.Object) 
 	{ // This function has to be registered in Node_Editor.ContextCallback
 		ObjectNode node = ScriptableObject.CreateInstance<ObjectNode>();
+		node.nodeType = nodeType;
 		node.baseObject = new GameObject();
-		node.baseObject.transform.parent = GameObject.Find("CrimeObjects").transform;
- 		node.baseObject.name = "새 오브젝트";
-		node.baseObject.AddComponent<SpriteRenderer>();
 		node.crimeObject = node.baseObject.AddComponent<CrimeObject>();
-		node.name = "오브젝트";
 		node.rect = NodeRect;
 		node.selects = new Dictionary<NodeOutput, Selection>();
-		NodeOutput.Create (node, "오브젝트 입력", IOtype.ObjectOnly);
-
+		
+		if (nodeType == NodeType.Object)
+		{
+			node.crimeObject.isItem = false;
+			node.baseObject.transform.parent = GameObject.Find("CrimeObjects").transform;	
+			node.baseObject.name = "새 오브젝트";
+			node.baseObject.AddComponent<SpriteRenderer>();
+			node.name = "오브젝트";
+			NodeOutput.Create (node, "오브젝트 입력", IOtype.ObjectOnly);
+			GameObject transHolder = new GameObject();
+			transHolder.name = "버튼 생성위치";
+			transHolder.transform.parent = node.baseObject.transform;
+			node.crimeObject.buttonTrans = transHolder.transform;
+		}
+		else if (nodeType == NodeType.Item)
+		{
+			node.crimeObject.isItem = true;
+			node.baseObject.transform.parent = GameObject.Find("CrimeItems").transform;	
+			node.baseObject.name = "새 아이템";
+			node.name = "아이템";
+			NodeOutput.Create (node, "아이템 입력", IOtype.ItemOnly);			
+		}
 		node.Init ();
 		Node_Editor.editor.OnSave += node.OnSave;
 		Node_Editor.editor.OnLoad += node.OnLoad;
@@ -82,7 +99,6 @@ public class ObjectNode : Node
 		baseObject.name = EditorGUILayout.TextField(baseObject.name);
 		GUILayout.EndHorizontal();
 		crimeObject.isActive = EditorGUILayout.Toggle("활성화", crimeObject.isActive);
-		crimeObject.useAsRoute = EditorGUILayout.Toggle("조건 노드로 사용하기", crimeObject.useAsRoute);
 		if (!isExpanded)
 		{
 			if(GUILayout.Button("자세히"))

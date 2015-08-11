@@ -8,10 +8,15 @@ public enum IOtype
 {
 	General, ObjectOnly, SelectionOnly, ItemOnly, Closed
 }
+public enum NodeType
+{
+	Object, Item, Route
+}
 
 [System.Serializable]
 public abstract class Node : ScriptableObject
 {
+	public NodeType nodeType;
 	public Rect rect = new Rect ();
 	public string objectPath;
 	[System.NonSerialized]

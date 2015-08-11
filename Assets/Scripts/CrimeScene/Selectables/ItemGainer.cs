@@ -9,7 +9,7 @@ namespace KillingGame.CrimeScene
 		{
 			if (target == null)
 				return;
-			CrimeManager.Instance.obtainItem(target);
+			CrimeManager.Instance.ObtainItem(target);
 		}
 	}
 }

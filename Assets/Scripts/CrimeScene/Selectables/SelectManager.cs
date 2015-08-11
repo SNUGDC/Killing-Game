@@ -54,7 +54,7 @@ namespace KillingGame.CrimeScene
 					isActive = false;
 					break;
 				case EnableOption.erase:
-					transform.parent.GetComponent<CrimeObject>().selectList.Remove(gameObject);
+					transform.parent.GetComponent<CrimeObject>().selectList.Remove(this);
 					Destroy(gameObject);
 					break;
 			}
@@ -69,7 +69,7 @@ namespace KillingGame.CrimeScene
 			dangers.ApplyDanger();
 			if (isOnce)
 			{
-				transform.parent.GetComponent<CrimeObject>().selectList.Remove(gameObject);
+				transform.parent.GetComponent<CrimeObject>().selectList.Remove(this);
 				Destroy(gameObject);
 			}
 		}
