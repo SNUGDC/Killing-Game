@@ -425,6 +425,18 @@ public class Node_Editor : EditorWindow
 			Handles.DrawBezier (startPos, endPos, startTan, endTan, shadowColor, null, (i + 1) * 4); // increasing width for fading shadow
 		Handles.DrawBezier(startPos, endPos, startTan, endTan, Color.black, null, 2);
 	}
+	public static void DrawNodeCurve (Vector2 end, Vector2 start, Color lineColor) 
+	{
+		Vector3 startPos = new Vector3 (start.x, start.y);
+		Vector3 endPos = new Vector3 (end.x, end.y);
+		Vector3 startTan = startPos + Vector3.right * 50;
+		Vector3 endTan = endPos + Vector3.left * 50;
+		Color shadowColor = new Color (0, 0, 0, 0.1f);
+		
+		for (int i = 0; i < 3; i++) // Draw a shadow with 3 shades
+			Handles.DrawBezier (startPos, endPos, startTan, endTan, shadowColor, null, (i + 1) * 4); // increasing width for fading shadow
+		Handles.DrawBezier(startPos, endPos, startTan, endTan, lineColor, null, 2);
+	}
 
 	#endregion
 

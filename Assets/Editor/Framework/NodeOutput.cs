@@ -8,7 +8,7 @@ public class NodeOutput : ScriptableObject
 	public Node body;
 	public Rect rect = new Rect ();
 	public List<NodeInput> connections = new List<NodeInput> ();
-	public string type;
+	public IOtype type;
 	public string nodeID;
 	[NonSerialized]
 	public object value = null;
@@ -16,11 +16,11 @@ public class NodeOutput : ScriptableObject
 	/// <summary>
 	/// Creates a new NodeOutput in NodeBody of specified type
 	/// </summary>
-	public static NodeOutput Create (Node NodeBody, string OutputName, Type OutputType) 
+	public static NodeOutput Create (Node NodeBody, string OutputName, IOtype type) 
 	{
 		NodeOutput output = NodeOutput.CreateInstance (typeof (NodeOutput)) as NodeOutput;
 		output.body = NodeBody;
-		output.type = OutputType.AssemblyQualifiedName;
+		output.type = type;
 		output.name = OutputName;
 		NodeBody.Outputs.Add (output);
 		return output;

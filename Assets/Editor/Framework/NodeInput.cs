@@ -7,25 +7,25 @@ public class NodeInput : ScriptableObject
 	public Node body;
 	public Rect rect = new Rect ();
 	public NodeOutput connection;
-	public string type;
+	public IOtype type;
 	public string nodeID;
 
 	/// <summary>
 	/// Creates a new NodeInput in NodeBody of specified type
 	/// </summary>
-	public static NodeInput Create (Node NodeBody, string InputName, Type InputType) 
+	public static NodeInput Create (Node NodeBody, string InputName, IOtype type) 
 	{
 		NodeInput input = NodeInput.CreateInstance (typeof (NodeInput)) as NodeInput;
 		input.body = NodeBody;
-		input.type = InputType.AssemblyQualifiedName;
+		input.type = type;
 		input.name = InputName;
 		NodeBody.Inputs.Add (input);
 		return input;
 	}
-	public static NodeInput Create(string InputName, Type InputType)
+	public static NodeInput Create(string InputName, IOtype type)
 	{
 		NodeInput input = NodeInput.CreateInstance (typeof (NodeInput)) as NodeInput;
-		input.type = InputType.AssemblyQualifiedName;
+		input.type = type;
 		input.name = InputName;
 		return input;
 	}
@@ -42,6 +42,8 @@ public class NodeInput : ScriptableObject
 	/// </summary>
 	public void DisplayLayout (GUIContent content) 
 	{
+		if (type == IOtype.Closed)
+			return;
 		GUIStyle style = new GUIStyle (UnityEditor.EditorStyles.label);
 		style.alignment = TextAnchor.MiddleRight;
 		GUILayout.Label (content, style);

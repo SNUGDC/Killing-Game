@@ -49,7 +49,7 @@ public class ObjectNode : Node
 		}
 	}
 	
-	public static ObjectNode Create (Rect NodeRect) 
+	public static ObjectNode Create(Rect NodeRect) 
 	{ // This function has to be registered in Node_Editor.ContextCallback
 		ObjectNode node = ScriptableObject.CreateInstance<ObjectNode>();
 		node.baseObject = new GameObject();
@@ -60,7 +60,7 @@ public class ObjectNode : Node
 		node.name = "오브젝트";
 		node.rect = NodeRect;
 		node.selects = new Dictionary<NodeOutput, Selection>();
-		NodeOutput.Create (node, "오브젝트 입력", typeof (float));
+		NodeOutput.Create (node, "오브젝트 입력", IOtype.ObjectOnly);
 
 		node.Init ();
 		Node_Editor.editor.OnSave += node.OnSave;
@@ -111,7 +111,7 @@ public class ObjectNode : Node
 				managerHolder.transform.parent = baseObject.transform;
 				managerHolder.name = "새 선택지";
 				selection.selectManager = managerHolder.AddComponent<SelectManager>();
-				NodeOutput key = NodeOutput.Create(this, "선택지 입력", typeof(float));
+				NodeOutput key = NodeOutput.Create(this, "선택지 입력", IOtype.SelectionOnly);
 				selects.Add(key, selection);
 				DrawNode();
 			}
@@ -169,7 +169,7 @@ public class ObjectNode : Node
 			selectOptionIndex = EditorGUILayout.Popup("종류", selectOptionIndex, selectOptions);
 			if(GUILayout.Button("기능 추가"))
 			{
-				NodeInput key = NodeInput.Create(this, "기능 출력", typeof(float));
+				NodeInput key;
 				Function executor = null;
 				if (!selects.ContainsKey(outPut))
 					return;
@@ -177,25 +177,36 @@ public class ObjectNode : Node
 				{
 					case 0:
 						executor = selectManager.gameObject.AddComponent<SpriteChanger>();
-					break;
+						key = NodeInput.Create(this, "기능 출력", IOtype.ObjectOnly);
+						break;
 					case 1:
 						executor = selectManager.gameObject.AddComponent<Enabler>();
-					break;
+						key = NodeInput.Create(this, "기능 출력", IOtype.General);
+						break;
 					case 2:
 						executor = selectManager.gameObject.AddComponent<SoundPlayer>();
-					break;
+						key = NodeInput.Create(this, "기능 출력", IOtype.Closed);
+						break;
 					case 3:
 						executor = selectManager.gameObject.AddComponent<MessageDisplayer>();
-					break;
+						key = NodeInput.Create(this, "기능 출력", IOtype.Closed);
+						break;
 					case 4:
 						executor = selectManager.gameObject.AddComponent<ItemGainer>();
-					break;
+						key = NodeInput.Create(this, "기능 출력", IOtype.ItemOnly);
+						break;
 					case 5:
 						executor = selectManager.gameObject.AddComponent<DangerChanger>();
-					break;
+						key = NodeInput.Create(this, "기능 출력", IOtype.SelectionOnly);
+						break;
 					case 6:
 						executor = selectManager.gameObject.AddComponent<SpriteShower>();
-					break;
+						key = NodeInput.Create(this, "기능 출력", IOtype.Closed);
+						break;
+					default:
+						executor = null;
+						key = null;
+						break;
 				}
 				functions.Add(key, executor);
 				DrawNode();

@@ -4,6 +4,11 @@ using System;
 using System.Collections.Generic;
 using Object = UnityEngine.Object;
 
+public enum IOtype
+{
+	General, ObjectOnly, SelectionOnly, ItemOnly, Closed
+}
+
 [System.Serializable]
 public abstract class Node : ScriptableObject
 {
@@ -98,9 +103,17 @@ public abstract class Node : ScriptableObject
 			NodeOutput output = Outputs [outCnt];
 			for (int conCnt = 0; conCnt < output.connections.Count; conCnt++) 
 			{
-				if (output.connections [conCnt] != null) 
-					Node_Editor.DrawNodeCurve (output.GetKnob ().center, 
-					                           output.connections [conCnt].GetKnob ().center);
+				Color lineColor = Color.black;
+				if (output.connections[conCnt] != null)
+				{
+					if (output.connections[conCnt].type == IOtype.ObjectOnly)
+						lineColor = Color.blue;
+					else if (output.connections[conCnt].type == IOtype.ItemOnly)
+						lineColor = Color.green;
+					else if (output.connections[conCnt].type == IOtype.SelectionOnly)
+						lineColor = Color.red;
+					Node_Editor.DrawNodeCurve (output.GetKnob ().center, output.connections [conCnt].GetKnob ().center, lineColor);
+				}
 				else
 					output.connections.RemoveAt (conCnt);
 			}
@@ -236,9 +249,21 @@ public abstract class Node : ScriptableObject
 		if (input.connection == output)
 			return false;
 
-		if (input.type != output.type)
+		if (input.type == IOtype.Closed || output.type == IOtype.Closed)
 			return false;
-
+		
+		if (input.type == IOtype.ItemOnly && output.type != IOtype.ItemOnly)
+			return false;
+		
+		if (input.type != IOtype.ItemOnly && output.type == IOtype.ItemOnly)
+			return false;
+		
+		if (input.type == IOtype.ObjectOnly && output.type != IOtype.ObjectOnly)
+			return false;
+		
+		if (input.type == IOtype.SelectionOnly && output.type != IOtype.SelectionOnly)
+			return false;
+		
 		//  if (output.body.isChildOf (input.body)) 
 		//  {
 		//  	Node_Editor.editor.ShowNotification (new GUIContent ("Recursion detected!"));
