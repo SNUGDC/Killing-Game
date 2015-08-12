@@ -82,6 +82,7 @@ public class ObjectNode : Node
 		}
 		else if (nodeType == NodeType.Route)
 		{
+			node.crimeObject.isItem = true;
 			node.crimeObject.useAsRoute = true;
 			node.baseObject.transform.parent = GameObject.Find("CrimeConditions").transform;	
 			node.baseObject.name = "새 조건식";
