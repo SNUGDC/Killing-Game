@@ -61,6 +61,7 @@ public class ObjectNode : Node
 		if (nodeType == NodeType.Object)
 		{
 			node.crimeObject.isItem = false;
+			node.baseObject.transform.localPosition = Vector3.zero;
 			node.baseObject.transform.parent = GameObject.Find("CrimeObjects").transform;	
 			node.baseObject.name = "새 오브젝트";
 			node.baseObject.AddComponent<SpriteRenderer>();
@@ -190,9 +191,28 @@ public class ObjectNode : Node
 			{
 				if (!selects.ContainsKey(outPut))
 					return;
+				List<NodeInput> keyInputList = new List<NodeInput>(selects[outPut].functions.Keys);
+				foreach (var inPut in keyInputList)
+				{
+					var functions1 = selects[outPut].functions;
+					var target = functions1[inPut];
+					DestroyImmediate((MonoBehaviour)functions[inPut]);
+					DestroyImmediate(target, true);			
+					functions1.Remove(inPut);
+					try
+					{
+						inPut.connection.connections.Remove(inPut);
+					}
+					catch (NullReferenceException e)
+					{
+						
+					}
+					Inputs.Remove(inPut);
+				}
+				DestroyImmediate(selects[outPut], true);
 				DestroyImmediate(selects[outPut].selectManager.gameObject);
 				selects.Remove(outPut);
-				Outputs.Remove(outPut);
+				//  Outputs.Remove(outPut);
 				Vector2 topLeft = rect.position;
 				rect = new Rect (topLeft.x, topLeft.y, 200, 100);
 				foreach (NodeInput inPut in outPut.connections)
@@ -291,7 +311,8 @@ public class ObjectNode : Node
 				{
 					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
 						return;
-					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					DestroyImmediate((MonoBehaviour)functions[inPut]);
+					DestroyImmediate(target, true);			
 					functions.Remove(inPut);
 					try
 					{
@@ -326,7 +347,8 @@ public class ObjectNode : Node
 				{
 					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
 						return;
-					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					DestroyImmediate((MonoBehaviour)functions[inPut]);
+					DestroyImmediate(target, true);			
 					functions.Remove(inPut);
 					try
 					{
@@ -356,7 +378,8 @@ public class ObjectNode : Node
 				{
 					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
 						return;
-					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					DestroyImmediate((MonoBehaviour)functions[inPut]);
+					DestroyImmediate(target, true);		
 					functions.Remove(inPut);
 					try
 					{
@@ -386,7 +409,8 @@ public class ObjectNode : Node
 				{
 					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
 						return;
-					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					DestroyImmediate((MonoBehaviour)functions[inPut]);
+					DestroyImmediate(target, true);			
 					functions.Remove(inPut);
 					try
 					{
@@ -418,7 +442,8 @@ public class ObjectNode : Node
 				{
 					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
 						return;
-					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					DestroyImmediate((MonoBehaviour)functions[inPut]);
+					DestroyImmediate(target, true);		
 					functions.Remove(inPut);
 					try
 					{
@@ -447,7 +472,8 @@ public class ObjectNode : Node
 				{
 					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
 						return;
-					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					DestroyImmediate((MonoBehaviour)functions[inPut]);
+					DestroyImmediate(target, true);			
 					functions.Remove(inPut);
 					try
 					{
@@ -477,7 +503,8 @@ public class ObjectNode : Node
 				{
 					if (!selects.ContainsKey(outPut) || !functions.ContainsKey(inPut))
 						return;
-					DestroyImmediate((MonoBehaviour)functions[inPut]);			
+					DestroyImmediate((MonoBehaviour)functions[inPut]);		
+					DestroyImmediate(target,true);	
 					functions.Remove(inPut);
 					try
 					{
@@ -574,6 +601,8 @@ public class ObjectNode : Node
 	
 	public override void OnDelete () 
 	{
+		Node_Editor.editor.OnSave -= OnSave;
+		Node_Editor.editor.OnLoad -= OnLoad;
 		DestroyImmediate(baseObject);
 		base.OnDelete ();
 		// Always call this if we want our custom OnDelete operations!

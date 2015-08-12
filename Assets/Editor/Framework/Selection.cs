@@ -30,6 +30,7 @@ public class Selection : ScriptableObject
 	}
 	public void OnLoad()
 	{
+		Debug.Log(selectHolderPath);
 		selectManager = Node.GetObject(selectHolderPath).GetComponent<SelectManager>();
 		functions = new Dictionary<NodeInput, Function>();
 		foreach (InputPathPair item in functionList)
