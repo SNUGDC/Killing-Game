@@ -80,7 +80,9 @@ namespace KillingGame.CrimeScene
 					if (useAsRoute)
 						foreach (Transform child in transform)
 						{
-							child.gameObject.SendMessage("Execute");
+							if (child.GetComponent<SelectManager>() == null)
+								continue;
+							child.GetComponent<SelectManager>().ExecuteSelect();
 						}
 					break;
 				case EnableOption.disable:

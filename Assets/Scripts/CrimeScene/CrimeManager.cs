@@ -12,6 +12,7 @@ namespace KillingGame.CrimeScene
 		public GameObject messageHolder;
 		public GameObject spriteShower;
 		public GameObject soundPlayer;
+		List<string> eventFlags;
 		
 		public float maxTime = 15;
 		float currentTime;
@@ -110,6 +111,15 @@ namespace KillingGame.CrimeScene
 			isGUI = true;
 			spriteShower.SetActive(true);
 			spriteShower.GetComponent<SpriteShow>().GetSprites(sprites);
+		}
+		
+		public void RegisterEvent(string newEventFlag)
+		{
+			if (newEventFlag == null || newEventFlag == "")
+				return;
+			if (eventFlags.Contains(newEventFlag))
+				return;
+			eventFlags.Add(newEventFlag);
 		}
 		
 		public void SpendTime(float timeSpent)

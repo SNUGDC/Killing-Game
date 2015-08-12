@@ -263,6 +263,7 @@ public class Node_Editor : EditorWindow
 					GenericMenu menu = new GenericMenu ();					
 					menu.AddItem(new GUIContent("오브젝트 추가"), false, ContextCallback, "objectNode");
 					menu.AddItem(new GUIContent("아이템 추가"), false, ContextCallback, "itemNode");
+					menu.AddItem(new GUIContent("조건 추가"), false, ContextCallback, "conditionNode");
 					menu.AddSeparator("");
 					
 					menu.ShowAsContext ();
@@ -340,6 +341,9 @@ public class Node_Editor : EditorWindow
 			break;
 		case "itemNode":
 			ObjectNode itemNode = ObjectNode.Create (new Rect (mousePos.x, mousePos.y, 200, 100), NodeType.Item);
+			break;
+		case "conditionNode":
+			ObjectNode conditionNode = ObjectNode.Create (new Rect (mousePos.x, mousePos.y, 200, 100), NodeType.Route);
 			break;
 		case "deleteNode":
 			Node node = NodeAtPosition (mousePos);

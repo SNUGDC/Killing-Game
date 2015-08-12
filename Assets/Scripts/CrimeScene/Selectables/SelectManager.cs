@@ -64,7 +64,8 @@ namespace KillingGame.CrimeScene
 		{
 			if (!isActive)
 				return;
-			gameObject.SendMessage("Execute");
+			if (GetComponent<Function>() != null)	
+				gameObject.SendMessage("Execute");
 			CrimeManager.Instance.SpendTime(requireTime);
 			dangers.ApplyDanger();
 			if (isOnce)
