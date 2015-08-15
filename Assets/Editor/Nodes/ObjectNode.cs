@@ -33,11 +33,13 @@ public class ObjectNode : Node
 			selectList[cnt].selection = item.Value;
 			cnt++;
 		}
+		Debug.Log(objectPath);
 	}
 	public void OnLoad()
 	{	
 		Node_Editor.editor.OnSave += OnSave;
 		Node_Editor.editor.OnLoad += OnLoad;
+		Debug.Log(objectPath);
 		baseObject = GameObject.Find(objectPath);
 		crimeObject = baseObject.GetComponent<CrimeObject>();
 		
