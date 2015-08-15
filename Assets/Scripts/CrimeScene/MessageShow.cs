@@ -9,11 +9,13 @@ namespace KillingGame.CrimeScene
 		public Text messageText;
 		string[] messages;
 		int i = 0;
-		public void getMessages(string[] message)
+		public void getMessages(string[] messages)
 		{
 			messageText = transform.Find("Message").GetComponent<Text>();
 			i = 0;
-			messages = message;
+			this.messages = messages;
+			messageText.text = messages[i];
+			i = 1;
 		}
 		
 		void Update()
