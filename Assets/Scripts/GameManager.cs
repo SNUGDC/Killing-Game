@@ -12,11 +12,6 @@ namespace KillingGame
 		public string routeID;
 		public string lastPlay;
 		
-		public GameData(int dangerCount = 0, int chapter = 0)
-		{
-			this.dangerCount = dangerCount;
-			this.chapter = chapter;
-		}
 		public GameData()
 		{
 			
