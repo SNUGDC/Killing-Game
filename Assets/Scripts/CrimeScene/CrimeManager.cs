@@ -143,7 +143,7 @@ namespace KillingGame.CrimeScene
 		
 		void ExitCrimeScene()
 		{
-			GameManager.ChapterClear(dangerCount);
+			GameManager.ChapterClear(dangerCount, eventFlags);
 		}
 	}	
 }

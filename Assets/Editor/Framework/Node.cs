@@ -16,6 +16,7 @@ public enum NodeType
 [System.Serializable]
 public abstract class Node : ScriptableObject
 {
+	public bool isSaved;
 	public NodeType nodeType;
 	public Rect rect = new Rect ();
 	public string objectPath;

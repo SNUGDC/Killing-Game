@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System;
 using System.Collections.Generic;
 
@@ -23,6 +24,9 @@ public class NodeOutput : ScriptableObject
 		output.type = type;
 		output.name = OutputName;
 		NodeBody.Outputs.Add (output);
+		if (NodeBody.isSaved)
+			AssetDatabase.AddObjectToAsset(output, NodeBody);
+		EditorUtility.SetDirty(output);
 		return output;
 	}
 
@@ -64,5 +68,10 @@ public class NodeOutput : ScriptableObject
 		return new Rect (rect.x - knobSize,
 		                 rect.y + (rect.height - knobSize) / 2, 
 		                 knobSize, knobSize);
+	}
+	
+	public void OnSave()
+	{
+		EditorUtility.SetDirty(this);
 	}
 }

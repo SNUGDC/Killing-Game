@@ -25,8 +25,7 @@ public class ItemNode : Node
 		node.baseObject.transform.parent = GameObject.Find("CrimeItems").transform;
 		node.baseObject.name = "새 아이템";
 		node.name = "아이템";
-		
-		
+			
 		return node;
 	}
 }

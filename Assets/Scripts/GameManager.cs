@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.IO;
+using System.Collections.Generic;
 using LitJson;
 
 namespace KillingGame
@@ -8,62 +9,20 @@ namespace KillingGame
 	{
 		public int dangerCount;
 		public int chapter;
+		public string routeID;
+		public string lastPlay;
 		
 		public GameData(int dangerCount = 0, int chapter = 0)
 		{
 			this.dangerCount = dangerCount;
 			this.chapter = chapter;
 		}
-	}
-	
-	public static class SaveManager
-	{
-		private static bool checkSlot(int saveSlot, out string filePath)
+		public GameData()
 		{
-			filePath = Application.persistentDataPath + "/save" + saveSlot.ToString("00") + ".json";
-			if (0 <= saveSlot && saveSlot <= 99)
-				return true;
-			return false;
-		}
-		public static bool SaveGame(int saveSlot, ref GameData gameData)
-		{
-			string filePath;
-			if (!checkSlot(saveSlot, out filePath))
-				return false;
 			
-			string textData = JsonMapper.ToJson(gameData);
-			File.WriteAllText(filePath, textData);
-			
-			return true;
-		}
-		public static bool LoadGame(int saveSlot, ref GameData gameData)
-		{	
-			string filePath;
-			if (!checkSlot(saveSlot, out filePath))
-				return false;
-			
-			FileInfo info = new FileInfo(filePath);
-			if (info == null || info.Exists == false)
-				return false;
-			
-			string textData = File.ReadAllText(filePath);
-			gameData = JsonMapper.ToObject<GameData>(textData);
-			
-			return true;
-		}
-		public static bool NewGame(int saveSlot, ref GameData gameData)
-		{
-			string filePath;
-			if (!checkSlot(saveSlot, out filePath))
-				return false;
-			
-			gameData = new GameData();
-			string textData = JsonMapper.ToJson(gameData);
-			File.WriteAllText(filePath, textData);
-			
-			return true;
 		}
 	}
+
 		
 	public static class GameManager
 	{
@@ -84,14 +43,40 @@ namespace KillingGame
 			}
 		}
 		
-		public static void ChapterClear(int dangerChange)
+		public static void StartStage()
+		{
+			Application.LoadLevel("Stage"+_gameData.chapter);
+		}
+		public static void ChapterClear(int dangerChange, List<string> eventFlagLists)
 		{
 			_gameData.chapter ++;
 			_gameData.dangerCount += dangerChange;
 		}
 		public static void LoadChapter()
 		{
-			
+			Application.LoadLevel("Chapter"+_gameData.chapter);
+		}
+		
+		public static void NewGame(int slotNumber)
+		{
+			_gameData = new GameData();
+			SaveGame(slotNumber);
+		}
+		
+		public static void SaveGame(int slotNumber)
+		{
+			string jsonData = JsonMapper.ToJson(_gameData);
+			PlayerPrefs.SetString("SaveData"+slotNumber, jsonData);
+			PlayerPrefs.Save();
+		}
+		
+		public static void LoadGame(int slotNumber)
+		{
+			string jsonData = PlayerPrefs.GetString("SaveData"+slotNumber);
+			if (string.IsNullOrEmpty(jsonData))
+				return;
+			_gameData = JsonMapper.ToObject<GameData>(jsonData);
+			LoadChapter();
 		}
 	}
 }

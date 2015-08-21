@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System.Collections.Generic;
 using KillingGame.CrimeScene;
 
@@ -27,6 +28,7 @@ public class Selection : ScriptableObject
 			functionList[cnt].path = path;
 			cnt ++;
 		}
+		EditorUtility.SetDirty(this);
 	}
 	public void OnLoad()
 	{

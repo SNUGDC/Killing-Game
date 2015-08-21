@@ -27,16 +27,26 @@ public class ObjectNode : Node
 		int cnt = 0;
 		foreach (var item in selects)
 		{
-			item.Value.OnSave();
 			selectList[cnt] = ScriptableObject.CreateInstance<OutputSelectionPair>();
 			selectList[cnt].output = Outputs.IndexOf(item.Key);
 			selectList[cnt].selection = item.Value;
+			selectList[cnt].selection.OnSave();
 			cnt++;
 		}
+		foreach (var item in Outputs)
+		{
+			item.OnSave();
+		}
+		foreach (var item in Inputs)
+		{
+			item.OnSave();
+		}
+		EditorUtility.SetDirty(this);
 		Debug.Log(objectPath);
 	}
 	public void OnLoad()
 	{	
+		Debug.Log("isSaved: " + isSaved);
 		Node_Editor.editor.OnSave += OnSave;
 		Node_Editor.editor.OnLoad += OnLoad;
 		Debug.Log(objectPath);

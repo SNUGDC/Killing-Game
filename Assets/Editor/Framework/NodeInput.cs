@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System;
 
 [System.Serializable]
@@ -20,6 +21,9 @@ public class NodeInput : ScriptableObject
 		input.type = type;
 		input.name = InputName;
 		NodeBody.Inputs.Add (input);
+		if (NodeBody.isSaved)
+			AssetDatabase.AddObjectToAsset(input, NodeBody);
+		EditorUtility.SetDirty(input);
 		return input;
 	}
 	public static NodeInput Create(string InputName, IOtype type)
@@ -71,5 +75,10 @@ public class NodeInput : ScriptableObject
 		return new Rect (rect.x + rect.width, 
 		                 rect.y + (rect.height - knobSize) / 2, 
 		                 knobSize, knobSize);
-	}	
+	}
+	
+	public void OnSave()
+	{
+		EditorUtility.SetDirty(this);
+	}
 }

@@ -465,6 +465,11 @@ public class Node_Editor : EditorWindow
 		EditorApplication.SaveScene(nodeCanvas.scenePath);
 		if (String.IsNullOrEmpty (path))
 			return;
+		for (int nodeCnt = 0; nodeCnt < nodeCanvas.nodes.Count; nodeCnt++) 
+		{
+			Node node = nodeCanvas.nodes [nodeCnt];
+			node.isSaved = true;
+		}
 		string existingPath = AssetDatabase.GetAssetPath (nodeCanvas);
 		if (!String.IsNullOrEmpty (existingPath))
 		{
@@ -475,17 +480,47 @@ public class Node_Editor : EditorWindow
 			}
 			return;
 		}
-		AssetDatabase.DeleteAsset(path);
-		AssetDatabase.CreateAsset (nodeCanvas, path);
+		else
+		{
+			AssetDatabase.CreateAsset (nodeCanvas, path);			
+		}
+
 		for (int nodeCnt = 0; nodeCnt < nodeCanvas.nodes.Count; nodeCnt++) 
 		{ // Add every node and every of it's inputs/outputs into the file. 
 			// Results in a big mess but there's no other way
 			Node node = nodeCanvas.nodes [nodeCnt];
-			AssetDatabase.AddObjectToAsset (node, nodeCanvas);
-			for (int inCnt = 0; inCnt < node.Inputs.Count; inCnt++) 
-				AssetDatabase.AddObjectToAsset (node.Inputs [inCnt], node);
-			for (int outCnt = 0; outCnt < node.Outputs.Count; outCnt++) 
-				AssetDatabase.AddObjectToAsset (node.Outputs [outCnt], node);
+			try
+			{
+				AssetDatabase.AddObjectToAsset (node, nodeCanvas);
+			}
+			catch (UnityException e)
+			{
+				
+			}
+			for (int inCnt = 0; inCnt < node.Inputs.Count; inCnt++)
+			{
+				try
+				{
+					AssetDatabase.AddObjectToAsset (node.Inputs [inCnt], node);
+				}
+				catch (UnityException e)
+				{
+					continue;
+				}
+			}
+				
+			for (int outCnt = 0; outCnt < node.Outputs.Count; outCnt++)
+			{
+				try
+				{
+					AssetDatabase.AddObjectToAsset (node.Outputs [outCnt], node);
+				}
+				catch (UnityException e)
+				{
+					continue;
+				}				
+			}
+
 			if (node.GetType() == typeof(ObjectNode))
 			{
 				ObjectNode objNode = (ObjectNode)node;
@@ -493,16 +528,44 @@ public class Node_Editor : EditorWindow
 				for (int selCnt=0; selCnt<objNode.selectList.Length; selCnt++)
 				{
 					OutputSelectionPair outputSelect = objNode.selectList[selCnt];
-					AssetDatabase.AddObjectToAsset(outputSelect, node);
-					//  AssetDatabase.AddObjectToAsset(outputSelect.output, outputSelect);
+					try
+					{
+						AssetDatabase.AddObjectToAsset(outputSelect, node);
+					}
+					catch (UnityException e)
+					{
+						
+					}
+					
 					Selection selection = outputSelect.selection;
-					AssetDatabase.AddObjectToAsset(selection, outputSelect);
+					try
+					{
+						AssetDatabase.AddObjectToAsset(selection, outputSelect);
+					}
+					catch (UnityException e)
+					{
+						
+					}
 					for (int funCnt=0; funCnt<selection.functionList.Length; funCnt++)
 					{
 						InputPathPair inputPath = selection.functionList[funCnt];
-						AssetDatabase.AddObjectToAsset(inputPath, selection);
-						//  AssetDatabase.AddObjectToAsset(inputPath.input, inputPath);
-						AssetDatabase.AddObjectToAsset(inputPath.path, inputPath);
+						
+						try
+						{
+							AssetDatabase.AddObjectToAsset(inputPath, selection);
+						}
+						catch (UnityException e)
+						{
+							
+						}
+						try
+						{
+							AssetDatabase.AddObjectToAsset(inputPath, selection);
+						}
+						catch (UnityException e)
+						{
+							AssetDatabase.AddObjectToAsset(inputPath.path, inputPath);
+						}
 					}
 				}
 			}
