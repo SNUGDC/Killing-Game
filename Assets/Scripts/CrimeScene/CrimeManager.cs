@@ -141,7 +141,7 @@ namespace KillingGame.CrimeScene
 			needle.transform.eulerAngles = new Vector3(0,0,-360 * currentTime/maxTime);
 		}
 		
-		void ExitCrimeScene()
+		public void ExitCrimeScene()
 		{
 			GameManager.ChapterClear(dangerCount, eventFlags);
 		}
