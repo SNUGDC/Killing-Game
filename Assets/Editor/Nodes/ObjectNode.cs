@@ -550,7 +550,7 @@ public class ObjectNode : Node
 				target.delay = EditorGUILayout.FloatField("발동 딜레이(초)", target.delay);
 				
 				SpriteShower shower = (SpriteShower)target;
-				for (int i=0; i<shower.sprites.Count; i++)
+				for (int i=0; i<shower.sprites.Length; i++)
 				{
 					shower.sprites[i] = EditorGUILayout.ObjectField(shower.sprites[i], typeof(Sprite), true) as Sprite;
 				}
@@ -558,7 +558,8 @@ public class ObjectNode : Node
 				newSprite = EditorGUILayout.ObjectField(newSprite, typeof(Sprite), true) as Sprite;
 				if(newSprite != null)
 				{
-					shower.sprites.Add(newSprite);
+					Array.Resize(ref shower.sprites, shower.sprites.Length+1);
+					shower.sprites[shower.sprites.Length - 1] = newSprite;
 				}
 			}
 			else if (target is EventMaker)

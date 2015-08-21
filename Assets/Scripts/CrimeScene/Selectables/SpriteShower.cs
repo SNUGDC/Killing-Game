@@ -1,14 +1,16 @@
 ﻿using UnityEngine;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace KillingGame.CrimeScene
 {
 	public class SpriteShower : Function
 	{
-		public List<Sprite> sprites = new List<Sprite>();
+		public Sprite[] sprites;
 		public override void Run()
 		{
-			CrimeManager.Instance.ShowSprite(sprites);
+			if (sprites != null)
+				CrimeManager.Instance.ShowSprite(sprites.ToList());
 		}
 	}
 }
