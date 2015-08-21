@@ -16,6 +16,11 @@ namespace KillingGame
 		{
 			
 		}
+		public GameData(int chapter)
+		{
+			this.chapter = chapter;
+			dangerCount = 0;
+		}
 	}
 
 		
@@ -54,8 +59,9 @@ namespace KillingGame
 		
 		public static void NewGame(int slotNumber)
 		{
-			_gameData = new GameData();
+			_gameData = new GameData(1);
 			SaveGame(slotNumber);
+			LoadChapter();
 		}
 		
 		public static void SaveGame(int slotNumber)
