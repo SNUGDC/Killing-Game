@@ -37,6 +37,8 @@ public class Selection : ScriptableObject
 		functions = new Dictionary<NodeInput, Function>();
 		foreach (InputPathPair item in functionList)
 		{
+			if (item == null)
+				Debug.Log("inputpathpair is null");
 			Function target = Node.GetComponentFromPath<Function>(item.path);
 			functions.Add(item.input, target);
 		}

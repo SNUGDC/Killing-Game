@@ -478,48 +478,85 @@ public class Node_Editor : EditorWindow
 				AssetDatabase.CopyAsset (existingPath, path);
 				LoadNodeCanvas (path);
 			}
+			for (int nodeCnt = 0; nodeCnt < nodeCanvas.nodes.Count; nodeCnt++) 
+			{ 
+				Node node = nodeCanvas.nodes [nodeCnt];
+				
+				//  for (int inCnt = 0; inCnt < node.Inputs.Count; inCnt++)
+				//  	AssetDatabase.AddObjectToAsset (node.Inputs [inCnt], node);
+					
+				//  for (int outCnt = 0; outCnt < node.Outputs.Count; outCnt++)
+				//  	AssetDatabase.AddObjectToAsset (node.Outputs [outCnt], node);
+	
+	
+				if (node.GetType() == typeof(ObjectNode))
+				{
+					ObjectNode objNode = (ObjectNode)node;
+					Debug.Log("Object node");
+					for (int selCnt=0; selCnt<objNode.selectList.Length; selCnt++)
+					{
+						OutputSelectionPair outputSelect = objNode.selectList[selCnt];
+						
+						Selection selection = outputSelect.selection;
+						//  AssetDatabase.AddObjectToAsset(selection, outputSelect);
+						
+						for (int funCnt=0; funCnt<selection.functionList.Length; funCnt++)
+						{
+							InputPathPair inputPath = selection.functionList[funCnt];
+							DestroyImmediate(inputPath.path, true);
+							DestroyImmediate(inputPath, true);
+						}
+						
+						DestroyImmediate(outputSelect, true);
+					}
+				}
+			}
+			ApplyChanges();
+			OnSave();
+			for (int nodeCnt = 0; nodeCnt < nodeCanvas.nodes.Count; nodeCnt++) 
+			{ // Add every node and every of it's inputs/outputs into the file. 
+				// Results in a big mess but there's no other way
+				Node node = nodeCanvas.nodes [nodeCnt];	
+	
+				if (node.GetType() == typeof(ObjectNode))
+				{
+					ObjectNode objNode = (ObjectNode)node;
+					Debug.Log("Object node");
+					for (int selCnt=0; selCnt<objNode.selectList.Length; selCnt++)
+					{
+						OutputSelectionPair outputSelect = objNode.selectList[selCnt];
+						AssetDatabase.AddObjectToAsset(outputSelect, node);
+						
+						Selection selection = outputSelect.selection;
+						AssetDatabase.AddObjectToAsset(selection, outputSelect);
+						
+						for (int funCnt=0; funCnt<selection.functionList.Length; funCnt++)
+						{
+							InputPathPair inputPath = selection.functionList[funCnt];
+							AssetDatabase.AddObjectToAsset(inputPath, selection);
+						
+							AssetDatabase.AddObjectToAsset(inputPath.path, inputPath);
+						}
+					}
+				}
+			}
 			return;
 		}
 		else
 		{
 			AssetDatabase.CreateAsset (nodeCanvas, path);			
 		}
-
+		
 		for (int nodeCnt = 0; nodeCnt < nodeCanvas.nodes.Count; nodeCnt++) 
-		{ // Add every node and every of it's inputs/outputs into the file. 
-			// Results in a big mess but there's no other way
+		{ 
 			Node node = nodeCanvas.nodes [nodeCnt];
-			try
-			{
-				AssetDatabase.AddObjectToAsset (node, nodeCanvas);
-			}
-			catch (UnityException e)
-			{
+			
+			//  for (int inCnt = 0; inCnt < node.Inputs.Count; inCnt++)
+			//  	AssetDatabase.AddObjectToAsset (node.Inputs [inCnt], node);
 				
-			}
-			for (int inCnt = 0; inCnt < node.Inputs.Count; inCnt++)
-			{
-				try
-				{
-					AssetDatabase.AddObjectToAsset (node.Inputs [inCnt], node);
-				}
-				catch (UnityException e)
-				{
-					continue;
-				}
-			}
-				
-			for (int outCnt = 0; outCnt < node.Outputs.Count; outCnt++)
-			{
-				try
-				{
-					AssetDatabase.AddObjectToAsset (node.Outputs [outCnt], node);
-				}
-				catch (UnityException e)
-				{
-					continue;
-				}				
-			}
+			//  for (int outCnt = 0; outCnt < node.Outputs.Count; outCnt++)
+			//  	AssetDatabase.AddObjectToAsset (node.Outputs [outCnt], node);
+
 
 			if (node.GetType() == typeof(ObjectNode))
 			{
@@ -528,44 +565,54 @@ public class Node_Editor : EditorWindow
 				for (int selCnt=0; selCnt<objNode.selectList.Length; selCnt++)
 				{
 					OutputSelectionPair outputSelect = objNode.selectList[selCnt];
-					try
-					{
-						AssetDatabase.AddObjectToAsset(outputSelect, node);
-					}
-					catch (UnityException e)
-					{
-						
-					}
+					DestroyImmediate(outputSelect);
+					
+					//  Selection selection = outputSelect.selection;
+					//  AssetDatabase.AddObjectToAsset(selection, outputSelect);
+					
+					//  for (int funCnt=0; funCnt<selection.functionList.Length; funCnt++)
+					//  {
+					//  	InputPathPair inputPath = selection.functionList[funCnt];
+					//  	AssetDatabase.AddObjectToAsset(inputPath, selection);
+					
+					//  	AssetDatabase.AddObjectToAsset(inputPath.path, inputPath);
+					//  }
+				}
+			}
+		}
+		ApplyChanges();
+		OnSave();
+		for (int nodeCnt = 0; nodeCnt < nodeCanvas.nodes.Count; nodeCnt++) 
+		{ // Add every node and every of it's inputs/outputs into the file. 
+			// Results in a big mess but there's no other way
+			Node node = nodeCanvas.nodes [nodeCnt];
+			AssetDatabase.AddObjectToAsset (node, nodeCanvas);
+			
+			for (int inCnt = 0; inCnt < node.Inputs.Count; inCnt++)
+				AssetDatabase.AddObjectToAsset (node.Inputs [inCnt], node);
+				
+			for (int outCnt = 0; outCnt < node.Outputs.Count; outCnt++)
+				AssetDatabase.AddObjectToAsset (node.Outputs [outCnt], node);
+
+
+			if (node.GetType() == typeof(ObjectNode))
+			{
+				ObjectNode objNode = (ObjectNode)node;
+				Debug.Log("Object node");
+				for (int selCnt=0; selCnt<objNode.selectList.Length; selCnt++)
+				{
+					OutputSelectionPair outputSelect = objNode.selectList[selCnt];
+					AssetDatabase.AddObjectToAsset(outputSelect, node);
 					
 					Selection selection = outputSelect.selection;
-					try
-					{
-						AssetDatabase.AddObjectToAsset(selection, outputSelect);
-					}
-					catch (UnityException e)
-					{
-						
-					}
+					AssetDatabase.AddObjectToAsset(selection, outputSelect);
+					
 					for (int funCnt=0; funCnt<selection.functionList.Length; funCnt++)
 					{
 						InputPathPair inputPath = selection.functionList[funCnt];
-						
-						try
-						{
-							AssetDatabase.AddObjectToAsset(inputPath, selection);
-						}
-						catch (UnityException e)
-						{
-							
-						}
-						try
-						{
-							AssetDatabase.AddObjectToAsset(inputPath, selection);
-						}
-						catch (UnityException e)
-						{
-							AssetDatabase.AddObjectToAsset(inputPath.path, inputPath);
-						}
+						AssetDatabase.AddObjectToAsset(inputPath, selection);
+					
+						AssetDatabase.AddObjectToAsset(inputPath.path, inputPath);
 					}
 				}
 			}

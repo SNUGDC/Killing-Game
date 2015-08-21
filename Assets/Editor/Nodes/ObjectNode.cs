@@ -23,6 +23,13 @@ public class ObjectNode : Node
 		crimeObject.Apply();
 		objectPath = GetObjectPath(baseObject);
 		
+		if (selectList != null)
+		{
+			foreach (OutputSelectionPair item in selectList)
+			{
+				DestroyImmediate(item, true);
+			}
+		}
 		selectList = new OutputSelectionPair[selects.Count];
 		int cnt = 0;
 		foreach (var item in selects)
@@ -56,6 +63,12 @@ public class ObjectNode : Node
 		selects = new Dictionary<NodeOutput, Selection>();
 		foreach (OutputSelectionPair item in selectList)
 		{
+			if (item == null)
+				Debug.Log("pair is null");
+			if (Outputs[item.output] == null)
+				Debug.Log("node output is null");
+			if (item.selection == null)
+				Debug.Log("Selection is null");
 			selects.Add(Outputs[item.output], item.selection);
 			item.selection.OnLoad();
 		}
