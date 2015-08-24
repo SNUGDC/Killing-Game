@@ -22,7 +22,7 @@ namespace KillingGame.CrimeScene
 		{
 			if (Input.GetMouseButtonDown(0))
 			{
-				if (showCounter >= sprites.Count)
+				if (sprites == null || showCounter >= sprites.Count)
 				{
 					CrimeManager.Instance.isGUI = false;
 					this.gameObject.SetActive(false);
