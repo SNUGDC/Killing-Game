@@ -26,7 +26,7 @@ namespace KillingGame
 		
 	public static class GameManager
 	{
-		private static GameData _gameData;
+		private static GameData _gameData = new GameData();
 		private static int _currentSlot;
 		public static int Danger
 		{
