@@ -14,6 +14,8 @@ namespace KillingGame.CrimeScene
 			spriter = transform.Find("Sprites").GetComponent<Image>();
 			showCounter = 0;
 			this.sprites = sprites;
+			spriter.sprite = sprites[showCounter];
+			showCounter++;
 		}
 		
 		void Update()
