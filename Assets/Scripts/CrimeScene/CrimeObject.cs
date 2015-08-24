@@ -129,7 +129,7 @@ namespace KillingGame.CrimeScene
 			{
 				selectButtons[i] = CrimeManager.Instance.GetButton();
 				selectButtons[i].transform.Find("Label").GetComponent<TextMesh>().text = item.name;
-				selectButtons[i].transform.position = buttonTrans.position + 1f * i * Vector3.down + 3 * Vector3.right;
+				selectButtons[i].transform.position = buttonTrans.position + 1f * i * Vector3.down + 3 * Vector3.right - 2 * Vector3.forward;
 				selectButtons[i].GetComponent<SelectableButton>().crimeObject = this;
 				selectButtons[i].GetComponent<SelectableButton>().selectable = item;
 				i++;
