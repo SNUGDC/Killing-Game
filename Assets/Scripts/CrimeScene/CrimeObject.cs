@@ -181,8 +181,9 @@ namespace KillingGame.CrimeScene
 			_baseSprite = newSprite;
 			thisRenderer.color = new Color(1, 1, 1, 1);
 			tempSpritor.SetActive(false);
-			
-			gameObject.AddComponent<PolygonCollider2D>();
+
+			if (newSprite != null)
+				gameObject.AddComponent<PolygonCollider2D>();
 			yield break;
 		}
 	}
