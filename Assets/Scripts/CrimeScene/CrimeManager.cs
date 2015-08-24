@@ -128,7 +128,6 @@ namespace KillingGame.CrimeScene
 			if (currentTime > maxTime)
 				Application.LoadLevel("GameOver");
 			ShowTime();
-			Debug.Log(currentTime);
 		}
 		
 		public void PlaySound(AudioClip sound)

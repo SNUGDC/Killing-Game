@@ -15,11 +15,10 @@ namespace KillingGame.CrimeScene
 			CrimeObject crimeObject = target.GetComponent<CrimeObject>();
 			if (crimeObject == null)
 				return;
-			if (baseSprite != null)
-			{
-				crimeObject.baseSprite = baseSprite;
-				target.GetComponent<SpriteRenderer>().sprite = baseSprite;		
-			}
+
+			crimeObject.baseSprite = baseSprite;
+			target.GetComponent<SpriteRenderer>().sprite = baseSprite;		
+
 			if (selectedSprite != null)
 				crimeObject.selectedSprite = selectedSprite;
 		}
