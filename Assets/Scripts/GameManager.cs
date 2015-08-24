@@ -51,6 +51,7 @@ namespace KillingGame
 		{
 			_gameData.chapter ++;
 			_gameData.dangerCount += dangerChange;
+			LoadChapter ();
 		}
 		public static void LoadChapter()
 		{
